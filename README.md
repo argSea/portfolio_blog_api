@@ -1,1 +1,1 @@
-# jsmith-develop-api
+generic portfolio/blog API
