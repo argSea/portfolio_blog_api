@@ -1,6 +1,6 @@
 package presenter
 
-import "github.com/firelink/api.jsmith-develop.com/argSea/entity"
+import "github.com/argSea/portfolio_blog_api/argSea/entity"
 
 type userPresenter struct {
 	Status  string       `json:"status"`

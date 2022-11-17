@@ -3,9 +3,9 @@ package repo
 import (
 	"context"
 
-	"github.com/firelink/api.jsmith-develop.com/argSea/entity"
-	"github.com/firelink/api.jsmith-develop.com/argSea/helper"
-	"github.com/firelink/api.jsmith-develop.com/argSea/structure/argStore"
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
+	"github.com/argSea/portfolio_blog_api/argSea/helper"
+	"github.com/argSea/portfolio_blog_api/argSea/structure/argStore"
 )
 
 //Concrete for repo

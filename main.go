@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/firelink/api.jsmith-develop.com/argSea/repo"
-	"github.com/firelink/api.jsmith-develop.com/argSea/service"
-	"github.com/firelink/api.jsmith-develop.com/argSea/structure/argStore"
-	"github.com/firelink/api.jsmith-develop.com/argSea/usecase"
+	"github.com/argSea/portfolio_blog_api/argSea/repo"
+	"github.com/argSea/portfolio_blog_api/argSea/service"
+	"github.com/argSea/portfolio_blog_api/argSea/structure/argStore"
+	"github.com/argSea/portfolio_blog_api/argSea/usecase"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )

@@ -1,4 +1,4 @@
-module github.com/firelink/api.jsmith-develop.com
+module github.com/argSea/portfolio_blog_api
 
 go 1.13
 

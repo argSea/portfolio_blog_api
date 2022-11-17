@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/firelink/api.jsmith-develop.com/argSea/entity"
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
 	"github.com/gorilla/mux"
 )
 

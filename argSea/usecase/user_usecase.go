@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/firelink/api.jsmith-develop.com/argSea/entity"
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
 )
 
 //Concrete for use case
