@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/argSea/portfolio_blog_api/argSea/entity"
 	"github.com/argSea/portfolio_blog_api/argSea/helper"
@@ -19,8 +20,9 @@ func NewUserRepo(store argStore.ArgDB) entity.UserRepository {
 	}
 }
 
-func (u *userRepo) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
+func (u *userRepo) GetUserByID(id string) (*entity.User, error) {
 	newUser := &entity.User{}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	finalTag := helper.GetFieldTag(*newUser, "Id", "bson")
 	err := u.store.Get(ctx, finalTag, id, newUser)
@@ -28,8 +30,9 @@ func (u *userRepo) GetUserByID(ctx context.Context, id string) (*entity.User, er
 	return newUser, err
 }
 
-func (u *userRepo) GetUserByUserName(ctx context.Context, userName string) (*entity.User, error) {
+func (u *userRepo) GetUserByUserName(userName string) (*entity.User, error) {
 	newUser := &entity.User{}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	finalTag := helper.GetFieldTag(*newUser, "UserName", "bson")
 	err := u.store.Get(ctx, finalTag, userName, newUser)
@@ -37,14 +40,15 @@ func (u *userRepo) GetUserByUserName(ctx context.Context, userName string) (*ent
 	return newUser, err
 }
 
-func (u *userRepo) Save(ctx context.Context, newUser entity.User) (*entity.User, error) {
+func (u *userRepo) Save(newUser entity.User) (*entity.User, error) {
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 	newID, err := u.store.Write(ctx, newUser)
 
 	if nil != err {
 		return nil, err
 	}
 
-	createdUser, cErr := u.GetUserByID(ctx, newID)
+	createdUser, cErr := u.GetUserByID(newID)
 
 	if nil != err {
 		return nil, cErr
@@ -54,9 +58,10 @@ func (u *userRepo) Save(ctx context.Context, newUser entity.User) (*entity.User,
 
 }
 
-func (u *userRepo) Update(ctx context.Context, userUpdates entity.User) (*entity.User, error) {
+func (u *userRepo) Update(userUpdates entity.User) (*entity.User, error) {
 	userID := userUpdates.Id
 	userUpdates.Id = ""
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	updateErr := u.store.Update(ctx, userID, userUpdates)
 
@@ -64,7 +69,7 @@ func (u *userRepo) Update(ctx context.Context, userUpdates entity.User) (*entity
 		return nil, updateErr
 	}
 
-	currUser, currErr := u.GetUserByID(ctx, userID)
+	currUser, currErr := u.GetUserByID(userID)
 
 	if nil != currErr {
 		return nil, currErr
@@ -73,6 +78,7 @@ func (u *userRepo) Update(ctx context.Context, userUpdates entity.User) (*entity
 	return currUser, nil
 }
 
-func (u *userRepo) Delete(ctx context.Context, id string) error {
+func (u *userRepo) Delete(id string) error {
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 	return u.store.Delete(ctx, id)
 }

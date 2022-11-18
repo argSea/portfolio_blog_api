@@ -1,10 +1,8 @@
 package service
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/argSea/portfolio_blog_api/argSea/entity"
 	"github.com/gorilla/mux"
@@ -28,7 +26,6 @@ func NewUserService(m *mux.Router, user entity.UserUsecase) {
 
 func (u *userService) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	//Decode
 	newUser := entity.User{}
@@ -41,7 +38,7 @@ func (u *userService) Create(w http.ResponseWriter, r *http.Request) {
 		Code:   200,
 	}
 
-	createdUser, err := u.userCase.Save(ctx, newUser)
+	createdUser, err := u.userCase.Save(newUser)
 
 	if nil != err {
 		finalModel.Code = 404
@@ -61,7 +58,6 @@ func (u *userService) Create(w http.ResponseWriter, r *http.Request) {
 
 func (u *userService) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	// finalModel :=
 	//Make model
@@ -72,7 +68,7 @@ func (u *userService) Get(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
-	tempUser, err := u.userCase.GetUserByID(ctx, id)
+	tempUser, err := u.userCase.GetUserByID(id)
 	// tempUser, err := u.userCase.GetUserByUserName(ctx, "saltosk")
 
 	if nil != err {
@@ -91,7 +87,6 @@ func (u *userService) Get(w http.ResponseWriter, r *http.Request) {
 
 func (u *userService) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	finalModel := &BaseResponse{
 		Status: "ok",
@@ -102,7 +97,7 @@ func (u *userService) Update(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&newUserDetails)
 	newUserDetails.Id = mux.Vars(r)["id"]
 
-	updatedUser, err := u.userCase.Update(ctx, newUserDetails)
+	updatedUser, err := u.userCase.Update(newUserDetails)
 
 	if nil != err {
 		finalModel.Code = 404
@@ -122,7 +117,6 @@ func (u *userService) Update(w http.ResponseWriter, r *http.Request) {
 
 func (u *userService) Delete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	//Make model
 	finalModel := &BaseResponse{
@@ -132,7 +126,7 @@ func (u *userService) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 
-	err := u.userCase.Delete(ctx, id)
+	err := u.userCase.Delete(id)
 
 	if nil != err {
 		finalModel.Code = 404

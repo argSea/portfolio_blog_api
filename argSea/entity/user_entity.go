@@ -1,9 +1,5 @@
 package entity
 
-import (
-	"context"
-)
-
 type Users []User
 
 //Entity // domain
@@ -22,20 +18,20 @@ type User struct {
 
 //User repo interface
 type UserRepository interface {
-	GetUserByID(context.Context, string) (*User, error)
-	GetUserByUserName(context.Context, string) (*User, error)
-	Save(context.Context, User) (*User, error)
-	Update(context.Context, User) (*User, error)
-	Delete(context.Context, string) error
+	GetUserByID(string) (*User, error)
+	GetUserByUserName(string) (*User, error)
+	Save(User) (*User, error)
+	Update(User) (*User, error)
+	Delete(string) error
 }
 
 //Use case for the above
 type UserUsecase interface {
-	GetUserByID(context.Context, string) (*User, error)
-	GetUserByUserName(context.Context, string) (*User, error)
-	Save(context.Context, User) (*User, error)
-	Update(context.Context, User) (*User, error)
-	Delete(context.Context, string) error
+	GetUserByID(string) (*User, error)
+	GetUserByUserName(string) (*User, error)
+	Save(User) (*User, error)
+	Update(User) (*User, error)
+	Delete(string) error
 	// Decode(io.ReadCloser) User
 }
 
