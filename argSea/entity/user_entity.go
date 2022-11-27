@@ -1,9 +1,11 @@
 package entity
 
-type Users []User
+import "github.com/argSea/portfolio_blog_api/argSea/core"
+
+type users []user
 
 //Entity // domain
-type User struct {
+type user struct {
 	//Model
 	Id        string   `json:"userID" bson:"_id,omitempty"`
 	UserName  string   `json:"userName" bson:"userName,omitempty"`
@@ -16,27 +18,40 @@ type User struct {
 	About     string   `json:"about" bson:"about,omitempty"`
 }
 
-//User repo interface
-type UserRepository interface {
-	GetUserByID(string) (*User, error)
-	GetUserByUserName(string) (*User, error)
-	Save(User) (*User, error)
-	Update(User) (*User, error)
-	Delete(string) error
+func NewUser() core.User {
+	return &user{}
 }
 
-//Use case for the above
-type UserUsecase interface {
-	GetUserByID(string) (*User, error)
-	GetUserByUserName(string) (*User, error)
-	Save(User) (*User, error)
-	Update(User) (*User, error)
-	Delete(string) error
-	// Decode(io.ReadCloser) User
+func (user user) GetUserID() string {
+	return user.Id
 }
 
-type UserPresenter interface {
-	Present() *User
+func (user user) GetAbout() string {
+	return user.About
+}
+
+func (user user) GetEmail() string {
+	return user.Email
+}
+
+func (user user) GetUserName() string {
+	return user.UserName
+}
+
+func (user user) GetFirstName() string {
+	return user.FirstName
+}
+
+func (user user) GetLastName() string {
+	return user.LastName
+}
+
+func (user user) GetTitle() string {
+	return user.Title
+}
+
+func (user user) GetPicture() string {
+	return user.Picture
 }
 
 type password string

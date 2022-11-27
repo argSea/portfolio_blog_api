@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/argSea/portfolio_blog_api/argSea/entity"
+	"github.com/argSea/portfolio_blog_api/argSea/core"
 	"github.com/argSea/portfolio_blog_api/argSea/helper"
 	"github.com/argSea/portfolio_blog_api/argSea/structure/argStore"
 )
@@ -12,16 +12,18 @@ import (
 //Concrete for repo
 type userRepo struct {
 	store argStore.ArgDB
+	user  core.User
 }
 
-func NewUserRepo(store argStore.ArgDB) entity.UserRepository {
+func NewUserRepo(user core.User, store argStore.ArgDB) core.UserRepository {
 	return &userRepo{
 		store: store,
+		user:  user,
 	}
 }
 
-func (u *userRepo) GetUserByID(id string) (*entity.User, error) {
-	newUser := &entity.User{}
+func (u *userRepo) GetUserByID(id string) (*core.User, error) {
+	newUser := u.user.makeUser()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	finalTag := helper.GetFieldTag(*newUser, "Id", "bson")
@@ -30,8 +32,8 @@ func (u *userRepo) GetUserByID(id string) (*entity.User, error) {
 	return newUser, err
 }
 
-func (u *userRepo) GetUserByUserName(userName string) (*entity.User, error) {
-	newUser := &entity.User{}
+func (u *userRepo) GetUserByUserName(userName string) (*core.User, error) {
+	newUser := u.user.makeUser()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
 	finalTag := helper.GetFieldTag(*newUser, "UserName", "bson")
@@ -40,7 +42,7 @@ func (u *userRepo) GetUserByUserName(userName string) (*entity.User, error) {
 	return newUser, err
 }
 
-func (u *userRepo) Save(newUser entity.User) (*entity.User, error) {
+func (u *userRepo) Save(newUser core.User) (*core.User, error) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 	newID, err := u.store.Write(ctx, newUser)
 
@@ -58,7 +60,7 @@ func (u *userRepo) Save(newUser entity.User) (*entity.User, error) {
 
 }
 
-func (u *userRepo) Update(userUpdates entity.User) (*entity.User, error) {
+func (u *userRepo) Update(userUpdates core.User) (*core.User, error) {
 	userID := userUpdates.Id
 	userUpdates.Id = ""
 	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)

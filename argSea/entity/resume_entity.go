@@ -1,7 +1,5 @@
 package entity
 
-import "context"
-
 type Resume struct {
 	Id            string        `json:"projectID" bson:"_id,omitempty"`
 	UserID        string        `json:"userID" bson:"userID,omitempty"`
@@ -13,17 +11,17 @@ type Resume struct {
 }
 
 type ResumeRepository interface {
-	GetResumeByID(context.Context, string) (*Resume, error)
-	GetResumeByUserID(context.Context, string) (*Resume, error)
-	Save(context.Context, Resume) (*Resume, error)
-	Update(context.Context, Resume) (*Resume, error)
-	Delete(context.Context, string) error
+	GetResumeByID(string) (*Resume, error)
+	GetResumeByUserID(string) (*Resume, error)
+	Save(Resume) (*Resume, error)
+	Update(Resume) (*Resume, error)
+	Delete(string) error
 }
 
 type ResumeUseCase interface {
-	GetResumeByID(context.Context, string) (*Resume, error)
-	GetResumeByUserID(context.Context, string) (*Resume, error)
-	Save(context.Context, Resume) (*Resume, error)
-	Update(context.Context, Resume) (*Resume, error)
-	Delete(context.Context, string) error
+	GetResumeByID(string) (*Resume, error)
+	GetResumeByUserID(string) (*Resume, error)
+	Save(Resume) (*Resume, error)
+	Update(Resume) (*Resume, error)
+	Delete(string) error
 }

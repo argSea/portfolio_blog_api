@@ -1,9 +1,5 @@
 package entity
 
-import (
-	"context"
-)
-
 type Projects []Project
 
 //Entity // domain
@@ -38,20 +34,20 @@ type ProjectSort struct {
 
 //User repo interface
 type ProjectRepository interface {
-	GetProjects(context.Context, int64, int64, ProjectSort) (*Projects, int64, error)
-	GetByProjectID(context.Context, string) (*Project, error)
-	GetProjectsByUserID(context.Context, string, int64, int64, ProjectSort) (*Projects, int64, error)
-	Save(context.Context, Project) (*Project, error)
-	Update(context.Context, Project) (*Project, error)
-	Delete(context.Context, string) error
+	GetProjects(int64, int64, ProjectSort) (*Projects, int64, error)
+	GetByProjectID(string) (*Project, error)
+	GetProjectsByUserID(string, int64, int64, ProjectSort) (*Projects, int64, error)
+	Save(Project) (*Project, error)
+	Update(Project) (*Project, error)
+	Delete(string) error
 }
 
 //Use case for the above
 type ProjectUsecase interface {
-	GetProjects(context.Context, int64, int64, ProjectSort) (*Projects, int64, error)
-	GetByProjectID(context.Context, string) (*Project, error)
-	GetProjectsByUserID(context.Context, string, int64, int64, ProjectSort) (*Projects, int64, error)
-	Save(context.Context, Project) (*Project, error)
-	Update(context.Context, Project) (*Project, error)
-	Delete(context.Context, string) error
+	GetProjects(int64, int64, ProjectSort) (*Projects, int64, error)
+	GetByProjectID(string) (*Project, error)
+	GetProjectsByUserID(string, int64, int64, ProjectSort) (*Projects, int64, error)
+	Save(Project) (*Project, error)
+	Update(Project) (*Project, error)
+	Delete(string) error
 }
