@@ -35,12 +35,13 @@ func main() {
 	mPass := viper.GetString("mongo.pass")
 	mDB := viper.GetString("mongo.dbName")
 
-	userTable := "users"
+	// userTable := "users"
 	projectTable := "projects"
 	resumeTable := "resume"
 
 	//User
-	userRepo := repo.NewUserRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, userTable))
+	// userRepo := repo.NewUserRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, userTable))
+	userRepo := repo.NewUserRepo(argStore.NewTestStore())
 	userCase := usecase.NewUserCase(userRepo)
 
 	//Project

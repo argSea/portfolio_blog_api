@@ -1,6 +1,8 @@
 package presenter
 
-import "github.com/argSea/portfolio_blog_api/argSea/entity"
+import (
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
+)
 
 type userPresenter struct {
 	Status  string       `json:"status"`

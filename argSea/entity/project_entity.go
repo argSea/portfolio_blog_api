@@ -31,23 +31,3 @@ type ProjectSort struct {
 	Id       int `bson:"_id,omitempty"`
 	Priority int `bson:"priority,omitempty"`
 }
-
-//User repo interface
-type ProjectRepository interface {
-	GetProjects(int64, int64, ProjectSort) (*Projects, int64, error)
-	GetByProjectID(string) (*Project, error)
-	GetProjectsByUserID(string, int64, int64, ProjectSort) (*Projects, int64, error)
-	Save(Project) (*Project, error)
-	Update(Project) (*Project, error)
-	Delete(string) error
-}
-
-//Use case for the above
-type ProjectUsecase interface {
-	GetProjects(int64, int64, ProjectSort) (*Projects, int64, error)
-	GetByProjectID(string) (*Project, error)
-	GetProjectsByUserID(string, int64, int64, ProjectSort) (*Projects, int64, error)
-	Save(Project) (*Project, error)
-	Update(Project) (*Project, error)
-	Delete(string) error
-}

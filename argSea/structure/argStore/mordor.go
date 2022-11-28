@@ -3,6 +3,7 @@ package argStore
 import (
 	"context"
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,7 +20,7 @@ type mordor struct {
 	collection *mongo.Collection
 }
 
-func NewMordor(host string, user string, pass string, db string, table string) *mordor {
+func NewMordor(host string, user string, pass string, db string, table string) ArgDB {
 	return &mordor{
 		host:   host,
 		user:   user,
@@ -29,8 +30,8 @@ func NewMordor(host string, user string, pass string, db string, table string) *
 	}
 }
 
-func (m *mordor) Get(ctx context.Context, field string, value interface{}, decoder interface{}) error {
-	client, _ := m.init(ctx)
+func (m *mordor) Get(field string, value interface{}, decoder interface{}) error {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -56,8 +57,8 @@ func (m *mordor) Get(ctx context.Context, field string, value interface{}, decod
 	return err
 }
 
-func (m *mordor) GetMany(ctx context.Context, field string, value interface{}, limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {
-	client, _ := m.init(ctx)
+func (m *mordor) GetMany(field string, value interface{}, limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -85,8 +86,8 @@ func (m *mordor) GetMany(ctx context.Context, field string, value interface{}, l
 	return count, nil
 }
 
-func (m *mordor) GetAll(ctx context.Context, limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {
-	client, _ := m.init(ctx)
+func (m *mordor) GetAll(limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -114,8 +115,8 @@ func (m *mordor) GetAll(ctx context.Context, limit int64, offset int64, sort int
 	return count, nil
 }
 
-func (m *mordor) Write(ctx context.Context, data interface{}) (string, error) {
-	client, _ := m.init(ctx)
+func (m *mordor) Write(data interface{}) (string, error) {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -137,8 +138,8 @@ func (m *mordor) Write(ctx context.Context, data interface{}) (string, error) {
 	return id.Hex(), nil
 }
 
-func (m *mordor) Update(ctx context.Context, key string, newData interface{}) error {
-	client, _ := m.init(ctx)
+func (m *mordor) Update(key string, newData interface{}) error {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -166,8 +167,8 @@ func (m *mordor) Update(ctx context.Context, key string, newData interface{}) er
 	return nil
 }
 
-func (m *mordor) Delete(ctx context.Context, key string) error {
-	client, _ := m.init(ctx)
+func (m *mordor) Delete(key string) error {
+	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
@@ -189,13 +190,13 @@ func (m *mordor) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-func (m *mordor) init(ctx context.Context) (*mongo.Client, error) {
+func (m *mordor) init() (*mongo.Client, context.Context, error) {
 	client, _ := mongo.NewClient(options.Client().ApplyURI("mongodb://" + m.user + ":" + m.pass + "@" + m.host + "/?authSource=admin&readPreference=primary&ssl=false"))
-	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 	clientErr := client.Connect(ctx)
 	collection := client.Database(m.dbName).Collection(m.table)
 
 	m.collection = collection
 
-	return client, clientErr
+	return client, ctx, clientErr
 }

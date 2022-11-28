@@ -9,19 +9,3 @@ type Resume struct {
 	ExtraCourses  Courses       `json:"extraCourses" bson:"extraCourses,omitempty"`
 	SkillSections SkillSections `json:"skills" bson:"skills,omitempty"`
 }
-
-type ResumeRepository interface {
-	GetResumeByID(string) (*Resume, error)
-	GetResumeByUserID(string) (*Resume, error)
-	Save(Resume) (*Resume, error)
-	Update(Resume) (*Resume, error)
-	Delete(string) error
-}
-
-type ResumeUseCase interface {
-	GetResumeByID(string) (*Resume, error)
-	GetResumeByUserID(string) (*Resume, error)
-	Save(Resume) (*Resume, error)
-	Update(Resume) (*Resume, error)
-	Delete(string) error
-}

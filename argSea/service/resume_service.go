@@ -1,21 +1,18 @@
 package service
 
 import (
-	"context"
-	"encoding/json"
 	"net/http"
-	"time"
 
-	"github.com/argSea/portfolio_blog_api/argSea/entity"
+	"github.com/argSea/portfolio_blog_api/argSea/core"
 	"github.com/gorilla/mux"
 )
 
 //Handler
 type resumeService struct {
-	resumeCase entity.ResumeUseCase
+	resumeCase core.ResumeUseCase
 }
 
-func NewResumeService(m *mux.Router, resume entity.ResumeUseCase) {
+func NewResumeService(m *mux.Router, resume core.ResumeUseCase) {
 	handler := &resumeService{
 		resumeCase: resume,
 	}
@@ -29,150 +26,150 @@ func NewResumeService(m *mux.Router, resume entity.ResumeUseCase) {
 
 func (resume *resumeService) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
-	//Decode
-	newResume := entity.Resume{}
-	decoder := json.NewDecoder(r.Body)
-	decoder.Decode(&newResume)
+	// //Decode
+	// newResume := entity.Resume{}
+	// decoder := json.NewDecoder(r.Body)
+	// decoder.Decode(&newResume)
 
-	//Make model
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
+	// //Make model
+	// finalModel := &BaseResponse{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	createdResume, err := resume.resumeCase.Save(ctx, newResume)
+	// createdResume, err := resume.resumeCase.Save(ctx, newResume)
 
-	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = nil
-	} else {
-		finalModel.Items = createdResume
-	}
+	// if nil != err {
+	// 	finalModel.Code = 404
+	// 	finalModel.Status = "error"
+	// 	finalModel.Message = err.Error()
+	// 	finalModel.Items = nil
+	// } else {
+	// 	finalModel.Items = createdResume
+	// }
 
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "    ")
-	encoder.Encode(finalModel)
+	// encoder := json.NewEncoder(w)
+	// encoder.SetIndent("", "    ")
+	// encoder.Encode(finalModel)
 
 	r.Body.Close()
 }
 
 func (resume *resumeService) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
-	//Make model
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
+	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	// //Make model
+	// finalModel := &BaseResponse{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	id := mux.Vars(r)["id"]
+	// id := mux.Vars(r)["id"]
 
-	tempResume, err := resume.resumeCase.GetResumeByID(ctx, id)
-	// tempResume, err := resume.resumeCase.GetUserByUserName(ctx, "saltosk")
+	// tempResume, err := resume.resumeCase.GetResumeByID(ctx, id)
+	// // tempResume, err := resume.resumeCase.GetUserByUserName(ctx, "saltosk")
 
-	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = tempResume
-	} else {
-		finalModel.Items = tempResume
-	}
+	// if nil != err {
+	// 	finalModel.Code = 404
+	// 	finalModel.Status = "error"
+	// 	finalModel.Message = err.Error()
+	// 	finalModel.Items = tempResume
+	// } else {
+	// 	finalModel.Items = tempResume
+	// }
 
-	json.NewEncoder(w).Encode(finalModel)
+	// json.NewEncoder(w).Encode(finalModel)
 
 	r.Body.Close()
 }
 
 func (resume *resumeService) GetByUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
-	//Make model
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
+	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	// //Make model
+	// finalModel := &BaseResponse{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	id := mux.Vars(r)["userID"]
+	// id := mux.Vars(r)["userID"]
 
-	tempResume, err := resume.resumeCase.GetResumeByUserID(ctx, id)
+	// tempResume, err := resume.resumeCase.GetResumeByUserID(ctx, id)
 
-	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = tempResume
-	} else {
-		finalModel.Items = tempResume
-	}
+	// if nil != err {
+	// 	finalModel.Code = 404
+	// 	finalModel.Status = "error"
+	// 	finalModel.Message = err.Error()
+	// 	finalModel.Items = tempResume
+	// } else {
+	// 	finalModel.Items = tempResume
+	// }
 
-	json.NewEncoder(w).Encode(finalModel)
+	// json.NewEncoder(w).Encode(finalModel)
 
 	r.Body.Close()
 }
 
 func (resume *resumeService) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
+	// finalModel := &BaseResponse{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	newResumeDetails := entity.Resume{}
-	json.NewDecoder(r.Body).Decode(&newResumeDetails)
-	newResumeDetails.Id = mux.Vars(r)["id"]
+	// newResumeDetails := entity.Resume{}
+	// json.NewDecoder(r.Body).Decode(&newResumeDetails)
+	// newResumeDetails.Id = mux.Vars(r)["id"]
 
-	updatedUser, err := resume.resumeCase.Update(ctx, newResumeDetails)
+	// updatedUser, err := resume.resumeCase.Update(ctx, newResumeDetails)
 
-	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = nil
-	} else {
-		finalModel.Items = updatedUser
-	}
+	// if nil != err {
+	// 	finalModel.Code = 404
+	// 	finalModel.Status = "error"
+	// 	finalModel.Message = err.Error()
+	// 	finalModel.Items = nil
+	// } else {
+	// 	finalModel.Items = updatedUser
+	// }
 
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "    ")
-	encoder.Encode(finalModel)
+	// encoder := json.NewEncoder(w)
+	// encoder.SetIndent("", "    ")
+	// encoder.Encode(finalModel)
 
 	r.Body.Close()
 }
 
 func (resume *resumeService) Delete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
-	//Make model
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
+	// //Make model
+	// finalModel := &BaseResponse{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	id := mux.Vars(r)["id"]
+	// id := mux.Vars(r)["id"]
 
-	err := resume.resumeCase.Delete(ctx, id)
+	// err := resume.resumeCase.Delete(ctx, id)
 
-	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = nil
-	} else {
-		finalModel.Message = "Deleted"
-		finalModel.Items = nil
-	}
+	// if nil != err {
+	// 	finalModel.Code = 404
+	// 	finalModel.Status = "error"
+	// 	finalModel.Message = err.Error()
+	// 	finalModel.Items = nil
+	// } else {
+	// 	finalModel.Message = "Deleted"
+	// 	finalModel.Items = nil
+	// }
 
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "    ")
-	encoder.Encode(finalModel)
+	// encoder := json.NewEncoder(w)
+	// encoder.SetIndent("", "    ")
+	// encoder.Encode(finalModel)
 
 	r.Body.Close()
 }

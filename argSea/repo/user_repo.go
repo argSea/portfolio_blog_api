@@ -1,10 +1,8 @@
 package repo
 
 import (
-	"context"
-	"time"
-
 	"github.com/argSea/portfolio_blog_api/argSea/core"
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
 	"github.com/argSea/portfolio_blog_api/argSea/helper"
 	"github.com/argSea/portfolio_blog_api/argSea/structure/argStore"
 )
@@ -12,39 +10,34 @@ import (
 //Concrete for repo
 type userRepo struct {
 	store argStore.ArgDB
-	user  core.User
 }
 
-func NewUserRepo(user core.User, store argStore.ArgDB) core.UserRepository {
+func NewUserRepo(store argStore.ArgDB) core.UserRepository {
 	return &userRepo{
 		store: store,
-		user:  user,
 	}
 }
 
-func (u *userRepo) GetUserByID(id string) (*core.User, error) {
-	newUser := u.user.makeUser()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+func (u *userRepo) GetUserByID(id string) (*entity.User, error) {
+	newUser := entity.User{}
 
-	finalTag := helper.GetFieldTag(*newUser, "Id", "bson")
-	err := u.store.Get(ctx, finalTag, id, newUser)
+	finalTag := helper.GetFieldTag(newUser, "Id", "bson")
+	err := u.store.Get(finalTag, id, newUser)
 
-	return newUser, err
+	return &newUser, err
 }
 
-func (u *userRepo) GetUserByUserName(userName string) (*core.User, error) {
-	newUser := u.user.makeUser()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
+func (u *userRepo) GetUserByUserName(userName string) (*entity.User, error) {
+	newUser := entity.User{}
 
-	finalTag := helper.GetFieldTag(*newUser, "UserName", "bson")
-	err := u.store.Get(ctx, finalTag, userName, newUser)
+	finalTag := helper.GetFieldTag(newUser, "UserName", "bson")
+	err := u.store.Get(finalTag, userName, newUser)
 
-	return newUser, err
+	return &newUser, err
 }
 
-func (u *userRepo) Save(newUser core.User) (*core.User, error) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
-	newID, err := u.store.Write(ctx, newUser)
+func (u *userRepo) Save(newUser entity.User) (*entity.User, error) {
+	newID, err := u.store.Write(newUser)
 
 	if nil != err {
 		return nil, err
@@ -60,12 +53,11 @@ func (u *userRepo) Save(newUser core.User) (*core.User, error) {
 
 }
 
-func (u *userRepo) Update(userUpdates core.User) (*core.User, error) {
+func (u *userRepo) Update(userUpdates entity.User) (*entity.User, error) {
 	userID := userUpdates.Id
 	userUpdates.Id = ""
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
 
-	updateErr := u.store.Update(ctx, userID, userUpdates)
+	updateErr := u.store.Update(userID, userUpdates)
 
 	if nil != updateErr {
 		return nil, updateErr
@@ -81,6 +73,5 @@ func (u *userRepo) Update(userUpdates core.User) (*core.User, error) {
 }
 
 func (u *userRepo) Delete(id string) error {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
-	return u.store.Delete(ctx, id)
+	return u.store.Delete(id)
 }

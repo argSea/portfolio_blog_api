@@ -1,15 +1,16 @@
 package usecase
 
 import (
+	"github.com/argSea/portfolio_blog_api/argSea/core"
 	"github.com/argSea/portfolio_blog_api/argSea/entity"
 )
 
 //Concrete for use case
 type userCase struct {
-	userRepo entity.UserRepository
+	userRepo core.UserRepository
 }
 
-func NewUserCase(repo entity.UserRepository) entity.UserUsecase {
+func NewUserCase(repo core.UserRepository) core.UserUsecase {
 	return &userCase{
 		userRepo: repo,
 	}
