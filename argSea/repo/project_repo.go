@@ -34,9 +34,10 @@ func (p *projectRepo) GetByProjectID(id string) (*entity.Project, error) {
 	newProject := &entity.Project{}
 
 	finalTag := helper.GetFieldTag(*newProject, "Id", "bson")
-	err := p.store.Get(finalTag, id, newProject)
+	data, err := p.store.Get(finalTag, id, newProject)
+	project := data.(entity.Project)
 
-	return newProject, err
+	return &project, err
 }
 
 func (p *projectRepo) GetProjectsByUserID(userID string, limit int64, offset int64, sort entity.ProjectSort) (*entity.Projects, int64, error) {

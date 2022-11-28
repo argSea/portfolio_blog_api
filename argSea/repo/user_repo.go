@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+
 	"github.com/argSea/portfolio_blog_api/argSea/core"
 	"github.com/argSea/portfolio_blog_api/argSea/entity"
 	"github.com/argSea/portfolio_blog_api/argSea/helper"
@@ -22,18 +24,21 @@ func (u *userRepo) GetUserByID(id string) (*entity.User, error) {
 	newUser := entity.User{}
 
 	finalTag := helper.GetFieldTag(newUser, "Id", "bson")
-	err := u.store.Get(finalTag, id, newUser)
+	data, err := u.store.Get(finalTag, id, newUser)
+	user := data.(entity.User)
+	fmt.Println(user)
 
-	return &newUser, err
+	return &user, err
 }
 
 func (u *userRepo) GetUserByUserName(userName string) (*entity.User, error) {
 	newUser := entity.User{}
 
 	finalTag := helper.GetFieldTag(newUser, "UserName", "bson")
-	err := u.store.Get(finalTag, userName, newUser)
+	data, err := u.store.Get(finalTag, userName, newUser)
+	user := data.(entity.User)
 
-	return &newUser, err
+	return &user, err
 }
 
 func (u *userRepo) Save(newUser entity.User) (*entity.User, error) {

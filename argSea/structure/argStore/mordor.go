@@ -30,12 +30,12 @@ func NewMordor(host string, user string, pass string, db string, table string) A
 	}
 }
 
-func (m *mordor) Get(field string, value interface{}, decoder interface{}) error {
+func (m *mordor) Get(field string, value interface{}, decoder interface{}) (interface{}, error) {
 	client, ctx, _ := m.init()
 	defer client.Disconnect(ctx)
 
 	if nil == m.collection {
-		return errors.New("Connection not setup")
+		return value, errors.New("Connection not setup")
 	}
 
 	if "key" == field {
@@ -46,7 +46,7 @@ func (m *mordor) Get(field string, value interface{}, decoder interface{}) error
 		id, idErr := primitive.ObjectIDFromHex(value.(string))
 
 		if nil != idErr {
-			return errors.New("Invalid key")
+			return value, errors.New("Invalid key")
 		}
 
 		value = id
@@ -54,7 +54,7 @@ func (m *mordor) Get(field string, value interface{}, decoder interface{}) error
 
 	err := m.collection.FindOne(ctx, bson.M{field: value}).Decode(decoder)
 
-	return err
+	return decoder, err
 }
 
 func (m *mordor) GetMany(field string, value interface{}, limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {

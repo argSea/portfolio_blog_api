@@ -19,21 +19,23 @@ func NewResumeRepo(store argStore.ArgDB) core.ResumeRepository {
 }
 
 func (r *resumeRepo) GetResumeByID(id string) (*entity.Resume, error) {
-	newResume := &entity.Resume{}
+	newResume := entity.Resume{}
 
-	finalTag := helper.GetFieldTag(*newResume, "Id", "bson")
-	err := r.store.Get(finalTag, id, newResume)
+	finalTag := helper.GetFieldTag(newResume, "Id", "bson")
+	data, err := r.store.Get(finalTag, id, newResume)
+	resume := data.(entity.Resume)
 
-	return newResume, err
+	return &resume, err
 }
 
 func (r *resumeRepo) GetResumeByUserID(userID string) (*entity.Resume, error) {
-	newResume := &entity.Resume{}
+	newResume := entity.Resume{}
 
-	finalTag := helper.GetFieldTag(*newResume, "UserID", "bson")
-	err := r.store.Get(finalTag, userID, newResume)
+	finalTag := helper.GetFieldTag(newResume, "UserID", "bson")
+	data, err := r.store.Get(finalTag, userID, newResume)
+	resume := data.(entity.Resume)
 
-	return newResume, err
+	return &resume, err
 }
 
 func (r *resumeRepo) Save(newResume entity.Resume) (*entity.Resume, error) {

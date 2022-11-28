@@ -1,6 +1,8 @@
 package argStore
 
-import "github.com/argSea/portfolio_blog_api/argSea/entity"
+import (
+	"github.com/argSea/portfolio_blog_api/argSea/entity"
+)
 
 type testStore struct {
 }
@@ -9,7 +11,7 @@ func NewTestStore() ArgDB {
 	return &testStore{}
 }
 
-func (t testStore) Get(field string, value interface{}, decoder interface{}) error {
+func (t *testStore) Get(field string, value interface{}, decoder interface{}) (interface{}, error) {
 	user := entity.User{}
 	user.Id = "12345"
 	user.About = "Testing about"
@@ -19,9 +21,8 @@ func (t testStore) Get(field string, value interface{}, decoder interface{}) err
 	user.Picture = "www.google.com/picture"
 	user.Title = "Something"
 	user.UserName = "someName"
-	decoder = user
 
-	return nil
+	return user, nil
 }
 
 func (t testStore) GetMany(field string, value interface{}, limit int64, offset int64, sort interface{}, decoder interface{}) (int64, error) {
