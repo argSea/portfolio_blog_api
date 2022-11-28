@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argSea/core"
@@ -58,28 +59,28 @@ func (u *userService) Create(w http.ResponseWriter, r *http.Request) {
 func (u *userService) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	// // finalModel :=
-	// //Make model
-	// finalModel := &BaseResponse{
-	// 	Status: "ok",
-	// 	Code:   200,
-	// }
+	// finalModel :=
+	//Make model
+	finalModel := &BaseResponse{
+		Status: "ok",
+		Code:   200,
+	}
 
-	// id := mux.Vars(r)["id"]
+	id := mux.Vars(r)["id"]
 
-	// tempUser, err := u.userCase.GetUserByID(id)
-	// // tempUser, err := u.userCase.GetUserByUserName(ctx, "saltosk")
+	tempUser, err := u.userCase.GetUserByID(id)
+	// tempUser, err := u.userCase.GetUserByUserName(ctx, "saltosk")
 
-	// if nil != err {
-	// 	finalModel.Code = 404
-	// 	finalModel.Status = "error"
-	// 	finalModel.Message = err.Error()
-	// 	finalModel.Items = tempUser
-	// } else {
-	// 	finalModel.Items = tempUser
-	// }
+	if nil != err {
+		finalModel.Code = 404
+		finalModel.Status = "error"
+		finalModel.Message = err.Error()
+		finalModel.Items = tempUser
+	} else {
+		finalModel.Items = tempUser
+	}
 
-	// json.NewEncoder(w).Encode(finalModel)
+	json.NewEncoder(w).Encode(finalModel)
 
 	r.Body.Close()
 }
