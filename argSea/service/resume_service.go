@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argSea/core"
@@ -59,28 +60,19 @@ func (resume *resumeService) Create(w http.ResponseWriter, r *http.Request) {
 
 func (resume *resumeService) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	// ctx, _ := context.WithTimeout(context.Background(), time.Second+10)
-	// //Make model
-	// finalModel := &BaseResponse{
-	// 	Status: "ok",
-	// 	Code:   200,
-	// }
+	id := mux.Vars(r)["id"]
+	view, err := resume.resumeCase.GetResumeByID(id)
 
-	// id := mux.Vars(r)["id"]
-
-	// tempResume, err := resume.resumeCase.GetResumeByID(ctx, id)
-	// // tempResume, err := resume.resumeCase.GetUserByUserName(ctx, "saltosk")
-
-	// if nil != err {
-	// 	finalModel.Code = 404
-	// 	finalModel.Status = "error"
-	// 	finalModel.Message = err.Error()
-	// 	finalModel.Items = tempResume
-	// } else {
-	// 	finalModel.Items = tempResume
-	// }
-
-	// json.NewEncoder(w).Encode(finalModel)
+	if nil != err {
+		finalModel := &BaseResponse{
+			Status:  "ok",
+			Code:    400,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(finalModel)
+	} else {
+		json.NewEncoder(w).Encode(view)
+	}
 
 	r.Body.Close()
 }

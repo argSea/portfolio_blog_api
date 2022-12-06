@@ -16,6 +16,42 @@ type User struct {
 	About     string   `json:"about" bson:"about,omitempty"`
 }
 
+// func (u *User) GetID() string {
+// 	return u.id
+// }
+
+// func (u *User) GetUserName() string {
+// 	return u.userName
+// }
+
+// func (u *User) GetPassword() password {
+// 	return u.password
+// }
+
+// func (u *User) GetFirstName() string {
+// 	return u.firstName
+// }
+
+// func (u *User) GetLastName() string {
+// 	return u.lastName
+// }
+
+// func (u *User) GetEmail() string {
+// 	return u.email
+// }
+
+// func (u *User) GetTitle() string {
+// 	return u.title
+// }
+
+// func (u *User) GetPicture() string {
+// 	return u.picture
+// }
+
+// func (u *User) GetAbout() string {
+// 	return u.about
+// }
+
 type password string
 
 func (password) MarshalJSON() ([]byte, error) {

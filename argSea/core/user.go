@@ -13,14 +13,14 @@ type UserRepository interface {
 
 //Use case for the above
 type UserUsecase interface {
-	GetUserByID(string) (*entity.User, error)
-	GetUserByUserName(string) (*entity.User, error)
-	Save(entity.User) (*entity.User, error)
-	Update(entity.User) (*entity.User, error)
+	GetUserByID(string) (interface{}, error)
+	GetUserByUserName(string) (interface{}, error)
+	Save(entity.User) (interface{}, error)
+	Update(entity.User) (interface{}, error)
 	Delete(string) error
 	// Decode(io.ReadCloser) User
 }
 
 type UserPresenter interface {
-	Present() *entity.User
+	Present(model interface{}) interface{}
 }

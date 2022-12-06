@@ -5,10 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/argSea/portfolio_blog_api/argSea/repo"
-	"github.com/argSea/portfolio_blog_api/argSea/service"
-	"github.com/argSea/portfolio_blog_api/argSea/structure/argStore"
-	"github.com/argSea/portfolio_blog_api/argSea/usecase"
+	adapters "github.com/argSea/portfolio_blog_api/argHex/adapters/user"
+	service "github.com/argSea/portfolio_blog_api/argHex/service/user"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -30,39 +28,46 @@ func main() {
 	router.Use(corsMiddleWare)
 
 	//Cache credentials
-	mHost := viper.GetString("mongo.host") + ":" + viper.GetString("mongo.port")
-	mUser := viper.GetString("mongo.user")
-	mPass := viper.GetString("mongo.pass")
-	mDB := viper.GetString("mongo.dbName")
+	// mHost := viper.GetString("mongo.host") + ":" + viper.GetString("mongo.port")
+	// mUser := viper.GetString("mongo.user")
+	// mPass := viper.GetString("mongo.pass")
+	// mDB := viper.GetString("mongo.dbName")
 
 	// userTable := "users"
-	projectTable := "projects"
-	resumeTable := "resume"
+	// projectTable := "projects"
+	// resumeTable := "resume"
 
 	//User
 	// userRepo := repo.NewUserRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, userTable))
-	userRepo := repo.NewUserRepo(argStore.NewTestStore())
-	userCase := usecase.NewUserCase(userRepo)
+	// userRepo := repo.NewUserRepo(argStore.NewTestStore())
+	// userPres := presenter.NewUserPresenter()
+	// userCase := usecase.NewAPIUserCase(userRepo, userPres)
 
 	//Project
-	projRepo := repo.NewProjectRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, projectTable))
-	projCase := usecase.NewProjectCase(projRepo)
+	// projRepo := repo.NewProjectRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, projectTable))
+	// projPres := presenter.NewProjectPresenter()
+	// projCase := usecase.NewAPIProjectCase(projRepo, projPres)
 
 	//Resume
-	resumeRepo := repo.NewResumeRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, resumeTable))
-	resumeCase := usecase.NewResumeCase(resumeRepo)
+	// resumeRepo := repo.NewResumeRepo(argStore.NewMordor(mHost, mUser, mPass, mDB, resumeTable))
+	// resumePres := presenter.NewResumePresenter()
+	// resumeCase := usecase.NewAPIResumeCase(resumeRepo, resumePres)
 
 	//user
 	userRouter := router.PathPrefix("/api/1/user/").Subrouter()
-	service.NewUserService(userRouter, userCase)
+	// service.NewUserService(userRouter, userCase)
 
-	//Project
-	projRouter := router.PathPrefix("/api/1/project/").Subrouter()
-	service.NewProjectService(projRouter, projCase)
+	// //Project
+	// projRouter := router.PathPrefix("/api/1/project/").Subrouter()
+	// service.NewProjectService(projRouter, projCase)
 
-	//Resume
-	resumeRouter := router.PathPrefix("/api/1/resume/").Subrouter()
-	service.NewResumeService(resumeRouter, resumeCase)
+	// //Resume
+	// resumeRouter := router.PathPrefix("/api/1/resume/").Subrouter()
+	// service.NewResumeService(resumeRouter, resumeCase)
+
+	userDrivenAdapter := adapters.NewUserFakeOutAdapter()
+	userService := service.NewUserCRUDService(userDrivenAdapter)
+	adapters.NewUserMuxAdapter(userService, userRouter)
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,

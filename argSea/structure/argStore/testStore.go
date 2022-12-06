@@ -22,6 +22,8 @@ func (t *testStore) Get(field string, value interface{}, decoder interface{}) (i
 	user.Title = "Something"
 	user.UserName = "someName"
 
+	// fake_error := errors.New("ome test error")
+
 	return user, nil
 }
 
