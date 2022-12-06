@@ -1,16 +1,16 @@
-package adapters
+package resumeAdapters
 
-import core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+import core "github.com/argSea/portfolio_blog_api/argHex/core/resume"
 
-type UserMongoAdapter struct {
+type resumeMongoAdapter struct {
 }
 
-func NewUserMongoAdapter() core.UserRepo {
-	u := UserMongoAdapter{}
+func NewUserMongoAdapter() core.ResumeRepo {
+	r := resumeMongoAdapter{}
 
-	return u
+	return r
 }
 
-func (u UserMongoAdapter) GetUserByID(id string) core.User {
-	return core.User{}
+func (res resumeMongoAdapter) GetByUserID(id string) core.Resume {
+	return core.Resume{}
 }

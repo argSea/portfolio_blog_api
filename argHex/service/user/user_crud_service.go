@@ -1,4 +1,4 @@
-package service
+package userService
 
 import core "github.com/argSea/portfolio_blog_api/argHex/core/user"
 

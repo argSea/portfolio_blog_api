@@ -1,25 +1,29 @@
-package adapters
+package resumeAdapters
 
 import (
 	"fmt"
 
-	core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+	"github.com/argSea/portfolio_blog_api/argHex/core/core_shared_structs"
+	core "github.com/argSea/portfolio_blog_api/argHex/core/resume"
 )
 
 type resumeFakeOutAdapter struct {
 }
 
-func NewResumeFakeOutAdapter() core.UserRepo {
+func NewResumeFakeOutAdapter() core.ResumeRepo {
 	return resumeFakeOutAdapter{}
 }
 
-func (u resumeFakeOutAdapter) GetUserByID(id string) core.User {
-	user := core.User{}
-	user.SetID("12345").
-		SetUserName("testUserName").
-		SetFirstName("testFirstName")
+func (u resumeFakeOutAdapter) GetByUserID(id string) core.Resume {
+	resume := core.Resume{}
+	resume.SetUserID("cabbage").
+		AddEducation(core_shared_structs.CollegeExperience{}).
+		AddExperience(core_shared_structs.Experience{}).
+		SetAbout("I'm me").
+		AddExtraCourse(core_shared_structs.Course{}).
+		AddSkillSection(core_shared_structs.SkillSection{})
 
-	fmt.Println(user)
+	fmt.Println(resume)
 
-	return user
+	return resume
 }

@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	adapters "github.com/argSea/portfolio_blog_api/argHex/adapters/user"
-	service "github.com/argSea/portfolio_blog_api/argHex/service/user"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -54,7 +52,7 @@ func main() {
 	// resumeCase := usecase.NewAPIResumeCase(resumeRepo, resumePres)
 
 	//user
-	userRouter := router.PathPrefix("/api/1/user/").Subrouter()
+	// userRouter := router.PathPrefix("/api/1/user/").Subrouter()
 	// service.NewUserService(userRouter, userCase)
 
 	// //Project
@@ -65,9 +63,10 @@ func main() {
 	// resumeRouter := router.PathPrefix("/api/1/resume/").Subrouter()
 	// service.NewResumeService(resumeRouter, resumeCase)
 
-	userDrivenAdapter := adapters.NewUserFakeOutAdapter()
-	userService := service.NewUserCRUDService(userDrivenAdapter)
-	adapters.NewUserMuxAdapter(userService, userRouter)
+	// userService := userService.NewUserCRUDService(userDrivenAdapter)
+	// userAdapters.NewUserMuxAdapter(userService, userRouter)
+
+	// resumeDrivenAdapter := resumeAdapters.NewResumeFakeOutAdapter()
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,

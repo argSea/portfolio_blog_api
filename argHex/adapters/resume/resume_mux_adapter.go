@@ -1,22 +1,22 @@
-package adapters
+package resumeAdapters
 
 import (
 	"encoding/json"
 	"net/http"
 
-	core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+	core "github.com/argSea/portfolio_blog_api/argHex/core/resume"
 	"github.com/gorilla/mux"
 )
 
 //FROM USER TO APP
-type userMuxAdapter struct {
-	user core.UserCRUDService
+type resumeMuxAdapter struct {
+	resume core.ResumeCRUDService
 }
 
-type userResponseObject struct {
-	Status string        `json:"status"`
-	Code   int           `json:"code"`
-	Users  []interface{} `json:"users"`
+type resumeResponseObject struct {
+	Status  string        `json:"status"`
+	Code    int           `json:"code"`
+	Resumes []interface{} `json:"resumes"`
 }
 
 type erroredResponseObject struct {
@@ -25,14 +25,14 @@ type erroredResponseObject struct {
 	Message string `json:"message"`
 }
 
-type userlessResponseObject struct {
+type resumelessResponseObject struct {
 	Status string `json:"status"`
 	Code   int    `json:"code"`
 }
 
-func NewUserMuxAdapter(user core.UserCRUDService, m *mux.Router) *userMuxAdapter {
-	u := userMuxAdapter{
-		user: user,
+func NewResumeMuxAdapter(resume core.ResumeCRUDService, m *mux.Router) *resumeMuxAdapter {
+	u := resumeMuxAdapter{
+		resume: resume,
 	}
 
 	m.HandleFunc("/", u.Create).Methods("POST")
@@ -43,12 +43,12 @@ func NewUserMuxAdapter(user core.UserCRUDService, m *mux.Router) *userMuxAdapter
 	return &u
 }
 
-func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
+func (res resumeMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
 	//does some stuff
 
-	resp := userlessResponseObject{
+	resp := resumelessResponseObject{
 		Status: "ok",
 		Code:   200,
 	}
@@ -58,27 +58,27 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func (u userMuxAdapter) Get(w http.ResponseWriter, r *http.Request) {
+func (res resumeMuxAdapter) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	id := mux.Vars(r)["id"]
-	user_data := u.user.Read(id)
+	resume_data := res.resume.Read(id)
 
-	response := userResponseObject{
+	response := resumeResponseObject{
 		Status: "ok",
 		Code:   200,
 	}
 
-	response.Users = append(response.Users, user_data)
+	response.Resumes = append(response.Resumes, resume_data)
 
 	json.NewEncoder(w).Encode(response)
 
 	r.Body.Close()
 }
 
-func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
+func (res resumeMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
+func (res resumeMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 
 }

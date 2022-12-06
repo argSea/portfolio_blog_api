@@ -1,4 +1,4 @@
-package core
+package core_shared_structs
 
 import "time"
 
@@ -15,7 +15,7 @@ type Experience struct {
 	Highlights Highlights   `json:"highlights" bson:"highlights,omitempty"`
 }
 
-type Education struct {
+type CollegeExperience struct {
 	School        *Institution `json:"school" bson:"school,omitempty"`
 	Degree        string       `json:"degree" bson:"degree,omitempty"`
 	Major         string       `json:"major" bson:"major,omitempty"`
@@ -83,3 +83,4 @@ type Links []Link
 type Pictures []Picture
 type Experiences []Experience
 type Features []Feature
+type Education []CollegeExperience
