@@ -63,6 +63,8 @@ func main() {
 	// resumeRouter := router.PathPrefix("/api/1/resume/").Subrouter()
 	// service.NewResumeService(resumeRouter, resumeCase)
 
+	//User
+	// userDrivenAdapter := userAdapters.NewUserFakeOutAdapter()
 	// userService := userService.NewUserCRUDService(userDrivenAdapter)
 	// userAdapters.NewUserMuxAdapter(userService, userRouter)
 

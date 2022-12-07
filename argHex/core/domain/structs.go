@@ -1,4 +1,4 @@
-package core_shared_structs
+package core
 
 import "time"
 

@@ -1,6 +1,6 @@
 package userAdapters
 
-import core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+import "github.com/argSea/portfolio_blog_api/argHex/core"
 
 type UserMongoAdapter struct {
 }

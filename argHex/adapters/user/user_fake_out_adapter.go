@@ -3,7 +3,7 @@ package userAdapters
 import (
 	"fmt"
 
-	core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+	"github.com/argSea/portfolio_blog_api/argHex/core"
 )
 
 type userFakeOutAdapter struct {

@@ -1,6 +1,6 @@
 package resumeAdapters
 
-import core "github.com/argSea/portfolio_blog_api/argHex/core/resume"
+import core "github.com/argSea/portfolio_blog_api/argHex/core"
 
 type resumeMongoAdapter struct {
 }

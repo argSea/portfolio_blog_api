@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	core "github.com/argSea/portfolio_blog_api/argHex/core/resume"
+	"github.com/argSea/portfolio_blog_api/argHex/core"
 	"github.com/gorilla/mux"
 )
 

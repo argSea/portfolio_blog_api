@@ -1,6 +1,6 @@
 package userService
 
-import core "github.com/argSea/portfolio_blog_api/argHex/core/user"
+import "github.com/argSea/portfolio_blog_api/argHex/core"
 
 type userCRUDService struct {
 	repo core.UserRepo
