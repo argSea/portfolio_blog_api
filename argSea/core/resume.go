@@ -11,9 +11,13 @@ type ResumeRepository interface {
 }
 
 type ResumeUseCase interface {
-	GetResumeByID(string) (*entity.Resume, error)
-	GetResumeByUserID(string) (*entity.Resume, error)
-	Save(entity.Resume) (*entity.Resume, error)
-	Update(entity.Resume) (*entity.Resume, error)
+	GetResumeByID(string) (interface{}, error)
+	GetResumeByUserID(string) (interface{}, error)
+	Save(entity.Resume) (interface{}, error)
+	Update(entity.Resume) (interface{}, error)
 	Delete(string) error
+}
+
+type ResumePresenter interface {
+	Present(model interface{}) interface{}
 }

@@ -58,29 +58,19 @@ func (u *userService) Create(w http.ResponseWriter, r *http.Request) {
 
 func (u *userService) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-
-	// finalModel :=
-	//Make model
-	finalModel := &BaseResponse{
-		Status: "ok",
-		Code:   200,
-	}
-
 	id := mux.Vars(r)["id"]
-
-	tempUser, err := u.userCase.GetUserByID(id)
-	// tempUser, err := u.userCase.GetUserByUserName(ctx, "saltosk")
+	view, err := u.userCase.GetUserByID(id)
 
 	if nil != err {
-		finalModel.Code = 404
-		finalModel.Status = "error"
-		finalModel.Message = err.Error()
-		finalModel.Items = tempUser
+		finalModel := &BaseResponse{
+			Status:  "ok",
+			Code:    400,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(finalModel)
 	} else {
-		finalModel.Items = tempUser
+		json.NewEncoder(w).Encode(view)
 	}
-
-	json.NewEncoder(w).Encode(finalModel)
 
 	r.Body.Close()
 }
