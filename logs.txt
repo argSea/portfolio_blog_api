@@ -1,0 +1,149 @@
+2022/12/12 23:09:01 main.go:95: Initializing resume
+2022/12/12 23:09:01 main.go:101: Initializing project
+2022/12/12 23:09:01 main.go:107: Initializing user
+2022/12/12 23:09:12 mordor.go:29: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/12 23:11:08 main.go:99: Initializing resume
+2022/12/12 23:11:08 main.go:105: Initializing project
+2022/12/12 23:11:08 main.go:111: Initializing user
+2022/12/12 23:14:59 main.go:105: Initializing resume
+2022/12/12 23:14:59 main.go:111: Initializing project
+2022/12/12 23:14:59 main.go:117: Initializing user
+2022/12/12 23:15:01 main.go:45: Shutting down argSea API
+2022/12/12 23:23:14 main.go:97: Initializing resume
+2022/12/12 23:23:14 main.go:103: Initializing project
+2022/12/12 23:23:14 main.go:109: Initializing user
+2022/12/12 23:23:59 mordor.go:29: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/12 23:25:20 main.go:97: Initializing resume
+2022/12/12 23:25:20 main.go:103: Initializing project
+2022/12/12 23:25:20 main.go:109: Initializing user
+2022/12/12 23:25:59 main.go:97: Initializing resume
+2022/12/12 23:25:59 main.go:103: Initializing project
+2022/12/12 23:25:59 main.go:109: Initializing user
+2022/12/12 23:26:29 main.go:108: Initializing resume
+2022/12/12 23:26:29 main.go:114: Initializing project
+2022/12/12 23:26:29 main.go:120: Initializing user
+2022/12/12 23:27:56 main.go:107: Initializing resume
+2022/12/12 23:27:56 main.go:113: Initializing project
+2022/12/12 23:27:56 main.go:119: Initializing user
+2022/12/12 23:27:59 main.go:47: Shutting down argSea API
+2022/12/12 23:28:24 main.go:108: Initializing resume
+2022/12/12 23:28:24 main.go:114: Initializing project
+2022/12/12 23:28:24 main.go:120: Initializing user
+2022/12/12 23:28:24 main.go:47: Shutting down argSea API
+2022/12/12 23:40:08 main.go:85: Initializing resume
+2022/12/12 23:40:08 main.go:91: Initializing project
+2022/12/12 23:40:08 main.go:97: Initializing user
+2022/12/12 23:40:09 mordor.go:106: value {Id: UserName:firelink2 Password:0d521f257fd0a6494167718725038e28a75d4ecb FirstName:Justin LastName:Smith Email:meo@argSea.com Title:Software Developer Picture:/media/a/zb/firelink.jpg About:<p>My name is Justin Smith, and I am a Software Developer from Pittsburgh, Pennsylvania. I am grateful to be a professional working in a career that I feel passionately about.</p><p>There is a reason this page is the home page for my site - I believe that in order to understand my work, my resume, or anything else you may view here, you first have to understand me and how my appetite for knowledge has influenced my life.</p><p>Software Development is as much a hobby of mine as it is a career. Working for someone and helping them bring their vision to life has been a good experience so far, but I want something more - I want the experience and the know-how to bring my own visions to life. I want to be able to take one of my side projects and turn it into something truly great. I enjoy helping other people bring their technological imaginations to life, but in order for me to achieve my ultimate goal, I need to learn how to imagine my own creations. This ultimate goal I speak of is to change the world; I want to make Earth a better place to live through technology. Even though a Bachelor's degree might be good enough for a programmer, no one has yet to tell me what kind of degree I would need to help the world. I feel that learning is something that one can never be finished with, and in order to achieve what I aspire, I want to stay fresh and broaden my horizons, while at the same time deepening the skills with which I am already accustomed.</p><p>I am currently a working professional, doing back-end PHP development for the Pittsburgh Post-Gazette. I have a wealth of experience in development of web-based technologies, but my favorite languages are C++ and Android. I like to find ways to improve things; do things in different ways or do things that may not be so ordinary.</p><p>Since this site is built in PHP and much of the backend cannot be seen, you can continue reading for a brief summary of the work I put into it.</p><p>I have been developing this site from scratch for the last few months. It is my biggest project to date. I use complete URL routing across the site in order to make the links as easy to read as possible. Every piece of content you see on this site other than the banner and the social links at the bottom, is dynamic content originating from a MySQL database. Other than a few jQuery functions and the syntax highlighting on the portfolio pages, every piece of code on this site came from hours of research, design and development. All graphics on this site were made by me. The only exceptions would come from graphics associated with projects in my Portfolio. Some of those graphics I make, some I borrow (only to be used non-commercially). The site's design is partially liquid, but I would not recommend viewing it on a mobile device. My biggest challenge in developing this website was how to design it. I spent long days wracking my brain trying to formulate a good design. The second biggest challenge was designing the portfolio pages. I wanted any visitor to be able to get a glimpse into my projects, even though many of them are very short and/or book exercises. However, I did not want the portfolio pages to be too cluttered or disorganized. Just like me and my projects, this site is a work in progress.</p>}
+2022/12/12 23:40:09 user_mongo_adapter.go:54: User created with ID: 6397bbd9d52f97bea7d08ceb
+2022/12/12 23:45:30 main.go:47: Shutting down argSea API
+2022/12/12 23:45:31 main.go:85: Initializing resume
+2022/12/12 23:45:31 main.go:91: Initializing project
+2022/12/12 23:45:31 main.go:97: Initializing user
+2022/12/12 23:45:34 main.go:47: Shutting down argSea API
+2022/12/12 23:45:37 main.go:85: Initializing resume
+2022/12/12 23:45:37 main.go:91: Initializing project
+2022/12/12 23:45:37 main.go:97: Initializing user
+2022/12/12 23:45:42 mordor.go:27: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/12 23:45:53 main.go:47: Shutting down argSea API
+2022/12/13 22:48:18 main.go:85: Initializing resume
+2022/12/13 22:48:18 main.go:91: Initializing project
+2022/12/13 22:48:18 main.go:97: Initializing user
+2022/12/13 22:48:46 mordor.go:155: key: 6397bbd9d52f97bea7d08ceb;
+2022/12/13 22:48:46 user_crud_service.go:55: User with ID 6397bbd9d52f97bea7d08ceb deleted successfully
+2022/12/13 23:15:35 main.go:47: Shutting down argSea API
+2022/12/13 23:16:23 main.go:85: Initializing resume
+2022/12/13 23:16:23 main.go:91: Initializing project
+2022/12/13 23:16:23 main.go:97: Initializing user
+2022/12/13 23:52:30 main.go:47: Shutting down argSea API
+2022/12/13 23:52:32 main.go:85: Initializing resume
+2022/12/13 23:52:32 main.go:93: Initializing project
+2022/12/13 23:52:32 main.go:99: Initializing user
+2022/12/13 23:53:09 mordor.go:106: value {Id: UserID:61aed61078b19d77ebaf5bf3 About:Test Experiences:[{Work:{Name:Pittsburgh Post-Gazette} Title:Systems Architect StartDate:{Year:2013 Month:May} EndDate:{Year:0 Month:%!Month(0)} Highlights:[{Description:Built our publishing push cache Visible:true}]}] Education:[{School:{Name:Penn State University} Degree:Software Engineering Major:Master of Software Engineering CumulativeGPA:3.8 Highlights:[] MajorGPA:3.8 StartDate:{Year:2014 Month:August} EndDate:{Year:2016 Month:August}}] ExtraCourses:[] SkillSections:[{Name:languages Skills:[{Name:C++ Efficiency:6} {Name:PHP Efficiency:10} {Name:Python Efficiency:7} {Name:Java Efficiency:6}]} {Name:Other Skills:[{Name:Varnish Efficiency:8} {Name:nginx Efficiency:8} {Name:Hadoop Efficiency:6} {Name:HBASE Efficiency:8} {Name:MongoDB Efficiency:5} {Name:Git Efficiency:9} {Name:SVN Efficiency:6}]}]};
+2022/12/13 23:53:09 resume_crud_service.go:25: Resume created with ID: 63991065460f2639908fe1e1
+2022/12/13 23:54:22 mordor.go:27: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/13 23:54:50 mordor.go:128: key: 61b5377e829812582f7599a6; new_data {Id: UserID:6396d88feafa14a262f9915c About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/13 23:54:50 resume_crud_service.go:43: Resume updated, resume: {61b5377e829812582f7599a6 6396d88feafa14a262f9915c  [] [] [] []}
+2022/12/13 23:55:19 mordor.go:27: field: _id; value 63991065460f2639908fe1e1; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/13 23:56:11 mordor.go:128: key: 63991065460f2639908fe1e1; new_data {Id: UserID:6396d88feafa14a262f9915c About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/13 23:56:11 resume_crud_service.go:43: Resume updated, resume: {63991065460f2639908fe1e1 6396d88feafa14a262f9915c  [] [] [] []}
+2022/12/13 23:56:13 mordor.go:27: field: _id; value 63991065460f2639908fe1e1; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/13 23:56:49 mordor.go:155: key: 63991065460f2639908fe1e1;
+2022/12/13 23:56:49 resume_crud_service.go:55: Resume with ID 63991065460f2639908fe1e1 deleted successfully
+2022/12/13 23:56:55 mordor.go:106: value {Id: UserID:63991065460f2639908fe1e1 About:Test Experiences:[{Work:{Name:Pittsburgh Post-Gazette} Title:Systems Architect StartDate:{Year:2013 Month:May} EndDate:{Year:0 Month:%!Month(0)} Highlights:[{Description:Built our publishing push cache Visible:true}]}] Education:[{School:{Name:Penn State University} Degree:Software Engineering Major:Master of Software Engineering CumulativeGPA:3.8 Highlights:[] MajorGPA:3.8 StartDate:{Year:2014 Month:August} EndDate:{Year:2016 Month:August}}] ExtraCourses:[] SkillSections:[{Name:languages Skills:[{Name:C++ Efficiency:6} {Name:PHP Efficiency:10} {Name:Python Efficiency:7} {Name:Java Efficiency:6}]} {Name:Other Skills:[{Name:Varnish Efficiency:8} {Name:nginx Efficiency:8} {Name:Hadoop Efficiency:6} {Name:HBASE Efficiency:8} {Name:MongoDB Efficiency:5} {Name:Git Efficiency:9} {Name:SVN Efficiency:6}]}]};
+2022/12/13 23:56:55 resume_crud_service.go:25: Resume created with ID: 63991147460f2639908fe1e2
+2022/12/13 23:57:14 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/14 00:12:06 main.go:47: Shutting down argSea API
+2022/12/14 00:12:21 main.go:85: Initializing resume
+2022/12/14 00:12:21 main.go:93: Initializing project
+2022/12/14 00:12:21 main.go:101: Initializing user
+2022/12/14 00:13:20 mordor.go:106: value {Id: UserIDs:[6396d88feafa14a262f9915c] Type: Name:Steelers Bars API ShortName:<nil> Icon:0xc000021760 Slug:steelers-bars-api RepoURL:<nil> Description:0xc000021770 Skills:<nil> Roles:<nil> Priority:10 IsActive:false IsReleased:true BookID:<nil> RelatedCourse:<nil> RelatedExperience:0xc0000768a0 Links:[] Snippets:[] Features:[]};
+2022/12/14 00:13:20 project_crud_service.go:25: Project created with ID: 63991520af8521363e700a00
+2022/12/14 00:13:26 mordor.go:106: value {Id: UserIDs:[6396d88feafa14a262f9915c] Type: Name:Publishing Queue ShortName:<nil> Icon:0xc000021960 Slug:publishing-queue RepoURL:<nil> Description:0xc000021970 Skills:<nil> Roles:<nil> Priority:10 IsActive:true IsReleased:true BookID:<nil> RelatedCourse:<nil> RelatedExperience:0xc000076b40 Links:[] Snippets:[] Features:[]};
+2022/12/14 00:13:26 project_crud_service.go:25: Project created with ID: 63991526af8521363e700a01
+2022/12/14 00:13:49 mordor.go:27: field: _id; value 63991520af8521363e700a00; decoder: &{Id: UserIDs:[] Type: Name: ShortName:<nil> Icon:<nil> Slug: RepoURL:<nil> Description:<nil> Skills:<nil> Roles:<nil> Priority:0 IsActive:false IsReleased:false BookID:<nil> RelatedCourse:<nil> RelatedExperience:<nil> Links:[] Snippets:[] Features:[]}
+2022/12/14 00:14:30 mordor.go:155: key: 63991520af8521363e700a00;
+2022/12/14 00:14:30 project_crud_service.go:55: Project with ID 63991520af8521363e700a00 deleted successfully
+2022/12/14 00:14:35 mordor.go:27: field: _id; value 63991520af8521363e700a00; decoder: &{Id: UserIDs:[] Type: Name: ShortName:<nil> Icon:<nil> Slug: RepoURL:<nil> Description:<nil> Skills:<nil> Roles:<nil> Priority:0 IsActive:false IsReleased:false BookID:<nil> RelatedCourse:<nil> RelatedExperience:<nil> Links:[] Snippets:[] Features:[]}
+2022/12/14 00:14:43 mordor.go:106: value {Id: UserIDs:[6396d88feafa14a262f9915c] Type: Name:Steelers Bars API ShortName:<nil> Icon:0xc00019cda0 Slug:steelers-bars-api RepoURL:<nil> Description:0xc00019cdb0 Skills:<nil> Roles:<nil> Priority:10 IsActive:false IsReleased:true BookID:<nil> RelatedCourse:<nil> RelatedExperience:0xc0000adc20 Links:[] Snippets:[] Features:[]};
+2022/12/14 00:14:43 project_crud_service.go:25: Project created with ID: 63991573af8521363e700a02
+2022/12/14 00:14:48 mordor.go:27: field: _id; value 63991573af8521363e700a02; decoder: &{Id: UserIDs:[] Type: Name: ShortName:<nil> Icon:<nil> Slug: RepoURL:<nil> Description:<nil> Skills:<nil> Roles:<nil> Priority:0 IsActive:false IsReleased:false BookID:<nil> RelatedCourse:<nil> RelatedExperience:<nil> Links:[] Snippets:[] Features:[]}
+2022/12/14 00:15:25 mordor.go:52: field: ; value ; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 00:15:48 mordor.go:27: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/14 00:15:54 mordor.go:52: field: ; value ; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 00:17:08 main.go:47: Shutting down argSea API
+2022/12/14 00:17:09 main.go:85: Initializing resume
+2022/12/14 00:17:09 main.go:93: Initializing project
+2022/12/14 00:17:09 main.go:101: Initializing user
+2022/12/14 00:17:11 mordor.go:52: field: userIDs; value ; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 00:18:37 main.go:47: Shutting down argSea API
+2022/12/14 00:18:39 main.go:85: Initializing resume
+2022/12/14 00:18:39 main.go:93: Initializing project
+2022/12/14 00:18:39 main.go:101: Initializing user
+2022/12/14 00:18:40 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:39 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:41 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:42 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:42 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:43 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:44 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:44 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:45 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:54 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:55 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:56 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/14 13:51:56 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/16 13:00:42 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/17 02:00:27 main.go:47: Shutting down argSea API
+2022/12/27 05:18:11 main.go:85: Initializing resume
+2022/12/27 05:18:11 main.go:93: Initializing project
+2022/12/27 05:18:11 main.go:101: Initializing user
+2022/12/27 05:18:17 mordor.go:27: field: _id; value 6396d88feafa14a262f9915c; decoder: &{Id: UserName: Password: FirstName: LastName: Email: Title: Picture: About:}
+2022/12/27 05:18:30 mordor.go:52: field: ; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/27 05:18:35 mordor.go:52: field: userIDs; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/27 05:19:05 mordor.go:27: field: _id; value 63991573af8521363e700a02; decoder: &{Id: UserIDs:[] Type: Name: ShortName:<nil> Icon:<nil> Slug: RepoURL:<nil> Description:<nil> Skills:<nil> Roles:<nil> Priority:0 IsActive:false IsReleased:false BookID:<nil> RelatedCourse:<nil> RelatedExperience:<nil> Links:[] Snippets:[] Features:[]}
+2022/12/27 05:19:20 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:20:06 mordor.go:27: field: _id; value 63991147460f2639908fe1e1; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:20:11 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:20:25 mordor.go:128: key: 63991065460f2639908fe1e2; new_data {Id: UserID:6396d88feafa14a262f9915c About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:20:25 resume_crud_service.go:43: Resume updated, resume: {63991065460f2639908fe1e2 6396d88feafa14a262f9915c  [] [] [] []}
+2022/12/27 05:20:29 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:21:23 main.go:47: Shutting down argSea API
+2022/12/27 05:21:25 main.go:85: Initializing resume
+2022/12/27 05:21:25 main.go:93: Initializing project
+2022/12/27 05:21:25 main.go:101: Initializing user
+2022/12/27 05:21:30 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:21:50 mordor.go:128: key: 63991147460f2639908fe1e2; new_data {Id: UserID:6396d88feafa14a262f9915c About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:21:50 resume_crud_service.go:43: Resume updated, resume: {63991147460f2639908fe1e2 6396d88feafa14a262f9915c  [] [] [] []}
+2022/12/27 05:21:56 mordor.go:52: field: ; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/27 05:22:05 mordor.go:27: field: _id; value 63991147460f2639908fe1e2; decoder: &{Id: UserID: About: Experiences:[] Education:[] ExtraCourses:[] SkillSections:[]}
+2022/12/27 05:22:17 mordor.go:52: field: ; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/27 05:23:12 main.go:47: Shutting down argSea API
+2022/12/27 05:23:15 main.go:85: Initializing resume
+2022/12/27 05:23:15 main.go:93: Initializing project
+2022/12/27 05:23:15 main.go:101: Initializing user
+2022/12/27 05:23:19 mordor.go:52: field: userID; value 6396d88feafa14a262f9915c; limit 50; offset 0; sort <nil>; decoder: &[]
+2022/12/27 05:38:07 main.go:47: Shutting down argSea API
+2022/12/27 05:38:29 main.go:85: Initializing resume
+2022/12/27 05:38:29 main.go:93: Initializing project
+2022/12/27 05:38:29 main.go:101: Initializing user
+2022/12/27 05:38:35 main.go:47: Shutting down argSea API
