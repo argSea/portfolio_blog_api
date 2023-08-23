@@ -74,6 +74,12 @@ type Skill struct {
 	Efficiency int    `json:"efficiency" bson:"efficiency,omitempty"`
 }
 
+type TechInterest struct {
+	Name          string `json:"name" bson:"name,omitempty"`
+	Icon          string `json:"icon" bson:"icon,omitempty"`
+	InterestLevel int    `json:"interestLevel" bson:"interestLevel,omitempty"`
+}
+
 type SkillSections []SkillSection
 type Skills []Skill
 type Highlights []Highlight
@@ -84,3 +90,4 @@ type Pictures []Picture
 type Experiences []Experience
 type Features []Feature
 type Education []CollegeExperience
+type TechInterests []TechInterest
