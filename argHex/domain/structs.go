@@ -80,6 +80,11 @@ type TechInterest struct {
 	InterestLevel int    `json:"interestLevel" bson:"interestLevel,omitempty"`
 }
 
+type Contact struct {
+	Name string `json:"name" bson:"name,omitempty"`
+	Link string `json:"link" bson:"link,omitempty"`
+}
+
 type SkillSections []SkillSection
 type Skills []Skill
 type Highlights []Highlight
@@ -91,3 +96,4 @@ type Experiences []Experience
 type Features []Feature
 type Education []CollegeExperience
 type TechInterests []TechInterest
+type Contacts []Contact
