@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"log"
 
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
@@ -37,8 +38,10 @@ func (u userAuthService) Login(user domain.User) (string, error) {
 		return user.Id, nil
 	}
 
+	err = errors.New("Incorrect credentials or user does not exist")
+
 	log.Printf("User not logged in. err: %v", err)
-	return "", nil
+	return "", err
 }
 
 func (u userAuthService) Signup(user domain.User) (string, error) {
