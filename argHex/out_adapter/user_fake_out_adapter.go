@@ -14,7 +14,22 @@ func NewUserFakeOutAdapter() out_port.UserRepo {
 	return userFakeOutAdapter{}
 }
 
+func (u userFakeOutAdapter) Login(user domain.User) (string, error) {
+	return "12345", nil
+}
+
 func (u userFakeOutAdapter) Get(id string) domain.User {
+	user := domain.User{}
+	user.Id = "12345"
+	user.UserName = "testUserName"
+	user.FirstName = "testFirstName"
+
+	fmt.Println(user)
+
+	return user
+}
+
+func (u userFakeOutAdapter) GetByUserName(username string) domain.User {
 	user := domain.User{}
 	user.Id = "12345"
 	user.UserName = "testUserName"

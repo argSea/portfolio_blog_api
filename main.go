@@ -105,7 +105,8 @@ func main() {
 	userService := service.NewUserCRUDService(userMongoAdapter)
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
-	in_adapter.NewUserMuxAdapter(userService, userResumeService, userProjectService, userRouter)
+	userAuthService := service.NewUserAuthService(userMongoAdapter)
+	in_adapter.NewUserMuxAdapter(userService, userAuthService, userResumeService, userProjectService, userRouter)
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,

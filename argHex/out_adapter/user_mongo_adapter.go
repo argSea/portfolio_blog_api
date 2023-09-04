@@ -33,6 +33,18 @@ func (u userMongoAdapter) Get(id string) domain.User {
 	return user
 }
 
+func (u userMongoAdapter) GetByUserName(username string) domain.User {
+	var user domain.User
+	err := u.store.Get("username", username, &user)
+
+	if nil != err {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return domain.User{}
+	}
+
+	return user
+}
+
 func (u userMongoAdapter) Set(user domain.User) error {
 	key := user.Id
 	user.Id = "" //unset so mongo doesn't try to set it

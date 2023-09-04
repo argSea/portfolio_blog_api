@@ -7,19 +7,22 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 )
 
 //FROM USER TO APP
 type userMuxAdapter struct {
 	user    in_port.UserCRUDService
+	auth    in_port.UserAuthService
 	resume  in_port.UserResumeService
 	project in_port.UserProjectService
 }
 
-func NewUserMuxAdapter(user in_port.UserCRUDService, resume in_port.UserResumeService, project in_port.UserProjectService, m *mux.Router) {
+func NewUserMuxAdapter(user in_port.UserCRUDService, auth in_port.UserAuthService, resume in_port.UserResumeService, project in_port.UserProjectService, m *mux.Router) {
 	u := &userMuxAdapter{
 		user:    user,
+		auth:    auth,
 		resume:  resume,
 		project: project,
 	}
@@ -30,11 +33,56 @@ func NewUserMuxAdapter(user in_port.UserCRUDService, resume in_port.UserResumeSe
 	m.HandleFunc("/{id}/", u.Update).Methods("PUT")
 	m.HandleFunc("/{id}/", u.Delete).Methods("DELETE")
 
+	//user auth service
+	m.HandleFunc("/login/", u.Login).Methods("POST")
+
 	//resume service
 	m.HandleFunc("/{id}/resumes/", u.GetResumes).Methods("GET")
 
 	//project service
 	m.HandleFunc("/{id}/projects/", u.GetProjects).Methods("GET")
+}
+
+func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	var user domain.User
+	json.NewDecoder(r.Body).Decode(&user)
+
+	user_id, err := u.auth.Login(user)
+
+	if nil != err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    400,
+			Message: err,
+		}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	// create jwt token
+	key := []byte("secret")
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["userID"] = user_id
+	tokenString, _ := token.SignedString(key)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
+		Status: "ok",
+		Code:   200,
+		Token:  tokenString,
+	})
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {

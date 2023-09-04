@@ -48,6 +48,12 @@ type UserResponseObject struct {
 	Users  []interface{} `json:"users"`
 }
 
+type LoginResponseObject struct {
+	Status string `json:"status"`
+	Code   int64  `json:"code"`
+	Token  string `json:"token"`
+}
+
 type NewUserResponseObject struct {
 	Status string `json:"status"`
 	Code   int64  `json:"code"`

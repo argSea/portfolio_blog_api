@@ -7,7 +7,7 @@ type User struct {
 	//Model
 	Id            string        `json:"userID" bson:"_id,omitempty"`
 	UserName      string        `json:"userName" bson:"userName,omitempty"`
-	Password      password      `json:"password" bson:"password,omitempty"`
+	Password      Password      `json:"password" bson:"password,omitempty"`
 	FirstName     string        `json:"firstName" bson:"firstName,omitempty"`
 	LastName      string        `json:"lastName" bson:"lastName,omitempty"`
 	Email         string        `json:"email" bson:"email,omitempty"`
@@ -18,8 +18,8 @@ type User struct {
 	TechInterests TechInterests `json:"techInterests" bson:"techInterests,omitempty"`
 }
 
-type password string
+type Password string
 
-func (password) MarshalJSON() ([]byte, error) {
+func (Password) MarshalJSON() ([]byte, error) {
 	return []byte(`""`), nil
 }
