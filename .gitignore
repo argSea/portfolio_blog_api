@@ -7,6 +7,8 @@
 *.dll
 *.so
 *.dylib
+logs.txt
+portfolio_blog_api
 
 # Test binary, built with `go test -c`
 *.test
