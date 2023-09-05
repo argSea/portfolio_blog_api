@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -135,6 +136,18 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		authorized := Authorize(r)
 
 		if !authorized {
+			repsonse := struct {
+				Status  string `json:"status"`
+				Code    int    `json:"code"`
+				Message string `json:"message"`
+			}{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized",
+			}
+
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(repsonse)
 			return
 		}
 
