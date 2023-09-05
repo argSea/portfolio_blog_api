@@ -196,25 +196,31 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		body := map[string]interface{}{}
 		json.NewDecoder(r.Body).Decode(&body)
 
-		log.Println(body)
+		check_1 := false
+		check_2 := false
 
-		if body["userID"] != userID {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized: userID in body does not match with token" + body["userID"].(string) + " " + userID,
+		// check if a userID field is present in the body
+		if _, ok := body["userID"]; ok {
+			// check if the userID in the body matches with the userID in the jwt
+			if body["userID"] == userID {
+				check_1 = true
 			}
-
-			json.NewEncoder(w).Encode(response)
-
-			return
 		}
 
-		if mux.Vars(r)["id"] != userID {
+		// check if any vars are present in the URL
+		if len(mux.Vars(r)) > 0 {
+			// check if the userID in the URL matches with the userID in the jwt
+			if mux.Vars(r)["id"] == userID {
+				check_2 = true
+			}
+		}
+
+		// if userID is not present in the body or the URL, just continue
+		if !check_1 && !check_2 {
 			response := data_objects.ErroredResponseObject{
 				Status:  "error",
 				Code:    401,
-				Message: "Unauthorized: userID in URL does not match with token" + mux.Vars(r)["id"] + " " + userID,
+				Message: "Unauthorized",
 			}
 			json.NewEncoder(w).Encode(response)
 
