@@ -7,7 +7,6 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type userMongoAdapter struct {
@@ -49,21 +48,6 @@ func (u userMongoAdapter) GetByUserName(username string) domain.User {
 func (u userMongoAdapter) Set(user domain.User) error {
 	key := user.Id
 	user.Id = "" //unset so mongo doesn't try to set it
-
-	// compare passwords with bcrypt
-	check_pass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
-
-	if check_pass != nil {
-		// hash password
-		new_pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-
-		if nil != err {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			return err
-		}
-
-		user.Password = domain.Password(new_pass)
-	}
 
 	err := u.store.Update(key, user)
 
