@@ -22,8 +22,21 @@ import (
 )
 
 func init() {
-	viper.SetConfigFile("config.json")
+	// look for --config in args
+	config := os.Getenv("CONFIG")
 
+	print(config)
+	os.Exit(1)
+
+	if "" != config {
+		viper.SetConfigFile(config)
+	} else {
+		// die if no config file
+		log.Fatal("No config file found")
+		os.Exit(1)
+	}
+
+	// read config
 	err := viper.ReadInConfig()
 
 	if nil != err {
