@@ -13,18 +13,27 @@ import (
 
 //FROM USER TO APP
 type userMuxAdapter struct {
-	user    in_port.UserCRUDService
-	auth    in_port.UserAuthService
-	resume  in_port.UserResumeService
-	project in_port.UserProjectService
+	user      in_port.UserCRUDService
+	auth      in_port.UserAuthService
+	resume    in_port.UserResumeService
+	project   in_port.UserProjectService
+	jtwSecret []byte
 }
 
-func NewUserMuxAdapter(user in_port.UserCRUDService, auth in_port.UserAuthService, resume in_port.UserResumeService, project in_port.UserProjectService, m *mux.Router) {
+func NewUserMuxAdapter(
+	user in_port.UserCRUDService,
+	auth in_port.UserAuthService,
+	resume in_port.UserResumeService,
+	project in_port.UserProjectService,
+	jtwSecret []byte,
+	m *mux.Router) {
+
 	u := &userMuxAdapter{
-		user:    user,
-		auth:    auth,
-		resume:  resume,
-		project: project,
+		user:      user,
+		auth:      auth,
+		resume:    resume,
+		project:   project,
+		jtwSecret: jtwSecret,
 	}
 
 	//user service
@@ -71,7 +80,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create jwt token
-	key := []byte("secret")
+	key := u.jtwSecret
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = user_id

@@ -61,6 +61,7 @@ func main() {
 	mUser := viper.GetString("mongo.user")
 	mPass := viper.GetString("mongo.pass")
 	mDB := viper.GetString("mongo.dbName")
+	jSecret := []byte(viper.GetString("jwt.secret"))
 
 	mongo_db, mongo_err := stores.NewMongoStore(mUser, mPass, mHost, mDB)
 
@@ -106,7 +107,7 @@ func main() {
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
 	userAuthService := service.NewUserAuthService(userMongoAdapter)
-	in_adapter.NewUserMuxAdapter(userService, userAuthService, userResumeService, userProjectService, userRouter)
+	in_adapter.NewUserMuxAdapter(userService, userAuthService, userResumeService, userProjectService, jSecret, userRouter)
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
