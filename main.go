@@ -27,13 +27,14 @@ func init() {
 	// look for --config in cli args
 	config := ""
 	log_file := ""
-	for _, arg := range os.Args {
-		if "--config" == arg {
-			config = os.Args[2]
+	// for loop with index
+	for index, element := range os.Args {
+		if "--config" == element {
+			config = os.Args[index+1]
 		}
 
-		if "--log" == arg {
-			log_file = os.Args[2]
+		if "--log" == element {
+			log_file = os.Args[index+1]
 		}
 	}
 
