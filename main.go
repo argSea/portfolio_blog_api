@@ -134,12 +134,80 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
-		// only allow POST, PUT and DELETE if jwt is present
-		if r.Method == "POST" || r.Method == "PUT" || r.Method == "DELETE" {
-			// check if jwt is present
-			token := r.Header.Get("Authorization")
+		exemptedPaths := []string{
+			"/1/user/login/",
+			"/1/user/signup/",
+		}
 
-			if token == "" {
+		// if not POST, PUT or DELETE, just continue
+		if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// if path is exempted, just continue
+		for _, path := range exemptedPaths {
+			if r.URL.Path == path {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
+		// check if jwt is present
+		token := r.Header.Get("Authorization")
+
+		if token == "" {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized",
+			}
+			json.NewEncoder(w).Encode(response)
+
+			return
+		}
+
+		// parse jwt
+		claims := jwt.MapClaims{}
+		_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(viper.GetString("jwt.secret")), nil
+		})
+
+		if err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized",
+			}
+			json.NewEncoder(w).Encode(response)
+
+			return
+		}
+
+		// check if jwt is expired
+		exp := claims["exp"].(float64)
+		expTime := time.Unix(int64(exp), 0)
+
+		if time.Now().After(expTime) {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized",
+			}
+			json.NewEncoder(w).Encode(response)
+
+			return
+		}
+
+		// get userID from jwt
+		userID := claims["userID"].(string)
+
+		// check if userID is present in the URL or in the body
+		if r.Method == "POST" || r.Method == "PUT" {
+			var body map[string]interface{}
+			json.NewDecoder(r.Body).Decode(&body)
+
+			if body["userID"] != userID {
 				response := data_objects.ErroredResponseObject{
 					Status:  "error",
 					Code:    401,
@@ -149,14 +217,8 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 				return
 			}
-
-			// parse jwt
-			claims := jwt.MapClaims{}
-			_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-				return []byte(viper.GetString("jwt.secret")), nil
-			})
-
-			if err != nil {
+		} else {
+			if mux.Vars(r)["id"] != userID {
 				response := data_objects.ErroredResponseObject{
 					Status:  "error",
 					Code:    401,
@@ -165,55 +227,13 @@ func baseMiddleWare(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(response)
 
 				return
-			}
-
-			// check if jwt is expired
-			exp := claims["exp"].(float64)
-			expTime := time.Unix(int64(exp), 0)
-
-			if time.Now().After(expTime) {
-				response := data_objects.ErroredResponseObject{
-					Status:  "error",
-					Code:    401,
-					Message: "Unauthorized",
-				}
-				json.NewEncoder(w).Encode(response)
-
-				return
-			}
-
-			// get userID from jwt
-			userID := claims["userID"].(string)
-
-			// check if userID is present in the URL or in the body
-			if r.Method == "POST" || r.Method == "PUT" {
-				var body map[string]interface{}
-				json.NewDecoder(r.Body).Decode(&body)
-
-				if body["userID"] != userID {
-					response := data_objects.ErroredResponseObject{
-						Status:  "error",
-						Code:    401,
-						Message: "Unauthorized",
-					}
-					json.NewEncoder(w).Encode(response)
-
-					return
-				}
-			} else {
-				if mux.Vars(r)["id"] != userID {
-					response := data_objects.ErroredResponseObject{
-						Status:  "error",
-						Code:    401,
-						Message: "Unauthorized",
-					}
-					json.NewEncoder(w).Encode(response)
-
-					return
-				}
 			}
 		}
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func contains(exemptedPaths []string, s string) {
+	panic("unimplemented")
 }
