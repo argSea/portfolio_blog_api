@@ -10,13 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// consts
-const (
-	// permissions
-	PERM_USER  = "user"
-	PERM_ADMIN = "admin"
-)
-
 type UserMuxServices struct {
 	User    in_port.UserCRUDService
 	Login   in_port.UserLoginService
@@ -337,13 +330,7 @@ func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 	token := r.Header.Get("Authorization")
 
 	// check if user is authorized
-	authorized := false
-
-	if "" != userID {
-		authorized = u.auth.IsAuthorized(userID, token, PERM_USER, PERM_ADMIN)
-	} else {
-		authorized = u.auth.IsAuthorized(userID, token, PERM_ADMIN)
-	}
+	authorized := u.auth.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{

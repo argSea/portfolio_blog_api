@@ -9,12 +9,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	// permissions
-	PERM_USER  = "user"
-	PERM_ADMIN = "admin"
-)
-
 type jwtAuthService struct {
 	jwtSecret []byte
 }
@@ -84,7 +78,7 @@ func (j jwtAuthService) IsAuthorized(id string, token string, roles ...string) b
 	role := validResponse.Role
 	userID := validResponse.UserID
 
-	if role != PERM_ADMIN {
+	if role != in_port.PERM_ADMIN {
 		if userID != id {
 			return false
 		}
