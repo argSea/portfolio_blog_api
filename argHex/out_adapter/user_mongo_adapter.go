@@ -35,7 +35,7 @@ func (u userMongoAdapter) Get(id string) domain.User {
 
 func (u userMongoAdapter) GetByUserName(username string) domain.User {
 	var user domain.User
-	err := u.store.Get("username", username, &user)
+	err := u.store.Get("userName", username, &user)
 
 	if nil != err {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
