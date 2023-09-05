@@ -42,6 +42,9 @@ func init() {
 		os.Exit(1)
 	}
 
+	print("Using config file: " + config + "\n")
+	print("Using log file: " + log_file + "\n")
+
 	//logger
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log_file_fh, log_file_err := os.OpenFile(log_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
