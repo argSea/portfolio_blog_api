@@ -23,8 +23,14 @@ import (
 
 func init() {
 	print("Initializing argSea API\n")
-	// look for --config in args
-	config := os.Getenv("CONFIG")
+
+	// look for --config in cli args
+	config := ""
+	for _, arg := range os.Args {
+		if "--config" == arg {
+			config = os.Args[2]
+		}
+	}
 
 	print(config)
 	os.Exit(1)
