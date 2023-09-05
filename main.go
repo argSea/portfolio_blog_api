@@ -188,53 +188,37 @@ func baseMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 
-		// check if jwt is expired
-		exp := claims["exp"].(float64)
-		expTime := time.Unix(int64(exp), 0)
+		// get userID from jwt
+		userID := claims["userID"].(string)
 
-		log.Println(expTime)
+		// check if userID is present in the URL or in the body
+		// get post or put body
+		body := map[string]interface{}{}
+		json.NewDecoder(r.Body).Decode(&body)
 
-		if time.Now().After(expTime) {
+		log.Println(body)
+
+		if body["userID"] != userID {
 			response := data_objects.ErroredResponseObject{
 				Status:  "error",
 				Code:    401,
-				Message: "Unauthorized: Token expired",
+				Message: "Unauthorized: userID in body does not match with token" + body["userID"].(string) + " " + userID,
 			}
+
 			json.NewEncoder(w).Encode(response)
 
 			return
 		}
 
-		// get userID from jwt
-		userID := claims["userID"].(string)
-
-		// check if userID is present in the URL or in the body
-		if r.Method == "POST" || r.Method == "PUT" {
-			var body map[string]interface{}
-			json.NewDecoder(r.Body).Decode(&body)
-
-			if body["userID"] != userID {
-				response := data_objects.ErroredResponseObject{
-					Status:  "error",
-					Code:    401,
-					Message: "Unauthorized: userID in body does not match with token" + body["userID"].(string) + " " + userID,
-				}
-
-				json.NewEncoder(w).Encode(response)
-
-				return
+		if mux.Vars(r)["id"] != userID {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized: userID in URL does not match with token" + mux.Vars(r)["id"] + " " + userID,
 			}
-		} else {
-			if mux.Vars(r)["id"] != userID {
-				response := data_objects.ErroredResponseObject{
-					Status:  "error",
-					Code:    401,
-					Message: "Unauthorized: userID in URL does not match with token" + mux.Vars(r)["id"] + " " + userID,
-				}
-				json.NewEncoder(w).Encode(response)
+			json.NewEncoder(w).Encode(response)
 
-				return
-			}
+			return
 		}
 
 		next.ServeHTTP(w, r)
