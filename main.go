@@ -155,6 +155,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		// check if jwt is present
 		token := r.Header.Get("Authorization")
+		print(token)
 
 		if token == "" {
 			response := data_objects.ErroredResponseObject{
