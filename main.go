@@ -26,9 +26,14 @@ func init() {
 
 	// look for --config in cli args
 	config := ""
+	log_file := ""
 	for _, arg := range os.Args {
 		if "--config" == arg {
 			config = os.Args[2]
+		}
+
+		if "--log" == arg {
+			log_file = os.Args[2]
 		}
 	}
 
@@ -40,6 +45,11 @@ func init() {
 		os.Exit(1)
 	}
 
+	if "" == log_file {
+		log.Fatal("No log file found")
+		os.Exit(1)
+	}
+
 	// read config
 	err := viper.ReadInConfig()
 
@@ -47,13 +57,9 @@ func init() {
 		panic(err)
 	}
 
-	//Possibly add debugging?
-}
-
-func main() {
 	//logger
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	log_file, log_file_err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
+	log_file_fh, log_file_err := os.OpenFile(log_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
 	if nil != log_file_err {
 		log.Fatal(log_file_err)
 	}
@@ -69,8 +75,10 @@ func main() {
 		os.Exit(0)
 	}()
 
-	log.SetOutput(log_file)
+	log.SetOutput(log_file_fh)
+}
 
+func main() {
 	//mux
 	router := mux.NewRouter()
 	router.Use(baseMiddleWare)
