@@ -155,7 +155,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		// check if jwt is present
 		token := r.Header.Get("Authorization")
-		print(token)
+		log.Println(token)
 
 		if token == "" {
 			response := data_objects.ErroredResponseObject{
@@ -173,6 +173,8 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(viper.GetString("jwt.secret")), nil
 		})
+
+		log.Println(claims)
 
 		if err != nil {
 			response := data_objects.ErroredResponseObject{
