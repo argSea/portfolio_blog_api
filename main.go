@@ -22,6 +22,7 @@ import (
 )
 
 func init() {
+	print("Initializing argSea API\n")
 	// look for --config in args
 	config := os.Getenv("CONFIG")
 
