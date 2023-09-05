@@ -21,24 +21,20 @@ func NewUserAuthService(repo out_port.UserRepo) in_port.UserAuthService {
 }
 
 func (u userAuthService) Login(user domain.User) (string, error) {
-	pass_str := string(user.Password)
-	hashed_pass, err := u.hashPassword(pass_str)
-
-	if nil != err {
-		return "", err
-	}
-
-	user.Password = domain.Password(hashed_pass)
-
 	// get user from repo
 	logged_in_user := u.repo.GetByUserName(user.UserName)
 
-	if logged_in_user.Password == user.Password {
+	// get salt from password
+	logged_in := bcrypt.CompareHashAndPassword([]byte(logged_in_user.Password), []byte(user.Password))
+
+	if logged_in == nil {
 		log.Printf("User logged in with ID: %v\n", logged_in_user.Id)
 		return user.Id, nil
 	}
 
-	err = errors.New("Incorrect credentials or user does not exist")
+	log.Printf("User not logged in. err: %v", logged_in.Error())
+
+	err := errors.New("Incorrect credentials or user does not exist")
 
 	log.Printf("User not logged in. err: %v", err)
 	return "", err

@@ -106,7 +106,7 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 		resp = data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    400,
-			Message: err,
+			Message: err.Error(),
 		}
 	} else {
 		resp = data_objects.NewUserResponseObject{
@@ -169,7 +169,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		resp = data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    400,
-			Message: updated_err,
+			Message: updated_err.Error(),
 		}
 	} else {
 		resp = data_objects.ItemLessResponseObject{
