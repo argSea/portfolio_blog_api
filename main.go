@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,10 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/in_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -130,6 +133,87 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
+
+		// only allow POST, PUT and DELETE if jwt is present
+		if r.Method == "POST" || r.Method == "PUT" || r.Method == "DELETE" {
+			// check if jwt is present
+			token := r.Header.Get("Authorization")
+
+			if token == "" {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    401,
+					Message: "Unauthorized",
+				}
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// parse jwt
+			claims := jwt.MapClaims{}
+			_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(viper.GetString("jwt.secret")), nil
+			})
+
+			if err != nil {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    401,
+					Message: "Unauthorized",
+				}
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// check if jwt is expired
+			exp := claims["exp"].(float64)
+			expTime := time.Unix(int64(exp), 0)
+
+			if time.Now().After(expTime) {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    401,
+					Message: "Unauthorized",
+				}
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// get userID from jwt
+			userID := claims["userID"].(string)
+
+			// check if userID is present in the URL or in the body
+			if r.Method == "POST" || r.Method == "PUT" {
+				var body map[string]interface{}
+				json.NewDecoder(r.Body).Decode(&body)
+
+				if body["userID"] != userID {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    401,
+						Message: "Unauthorized",
+					}
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+			} else {
+				if mux.Vars(r)["id"] != userID {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    401,
+						Message: "Unauthorized",
+					}
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+			}
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
