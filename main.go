@@ -66,7 +66,9 @@ func init() {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+}
 
+func main() {
 	//signal to kill and print final info
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -77,9 +79,7 @@ func init() {
 		fmt.Println("Shutting down argSea API")
 		os.Exit(0)
 	}()
-}
 
-func main() {
 	//mux
 	router := mux.NewRouter()
 	router.Use(baseMiddleWare)
