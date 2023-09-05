@@ -23,8 +23,6 @@ func NewUserAuthService(repo out_port.UserRepo) in_port.UserAuthService {
 func (u userAuthService) Login(user domain.User) (string, error) {
 	// get user from repo
 	logged_in_user := u.repo.GetByUserName(user.UserName)
-	log.Printf("Login attempt with username: %v, and password: %v\n", user.UserName, user.Password)
-	log.Printf("User from repo: %v\n", logged_in_user)
 
 	// compare password
 	logged_in := bcrypt.CompareHashAndPassword([]byte(logged_in_user.Password), []byte(user.Password))
