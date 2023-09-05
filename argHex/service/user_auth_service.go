@@ -24,8 +24,11 @@ func (u userAuthService) Login(user domain.User) (string, error) {
 	// get user from repo
 	logged_in_user := u.repo.GetByUserName(user.UserName)
 
-	// get salt from password
+	// compare password
 	logged_in := bcrypt.CompareHashAndPassword([]byte(logged_in_user.Password), []byte(user.Password))
+
+	// log result
+	log.Printf(string(user.Password))
 
 	if logged_in == nil {
 		log.Printf("User logged in with ID: %v\n", logged_in_user.Id)
