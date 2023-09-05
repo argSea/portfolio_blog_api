@@ -32,9 +32,6 @@ func init() {
 		}
 	}
 
-	print(config)
-	os.Exit(1)
-
 	if "" != config {
 		viper.SetConfigFile(config)
 	} else {
