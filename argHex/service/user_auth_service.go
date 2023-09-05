@@ -29,7 +29,7 @@ func (u userAuthService) Login(user domain.User) (string, error) {
 
 	if logged_in == nil {
 		log.Printf("User logged in with ID: %v\n", logged_in_user.Id)
-		return user.Id, nil
+		return logged_in_user.Id, nil
 	}
 
 	log.Printf("User not logged in. err: %v", logged_in.Error())

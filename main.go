@@ -175,6 +175,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		})
 
 		log.Println(claims)
+		log.Println(err)
 
 		if err != nil {
 			response := data_objects.ErroredResponseObject{
@@ -190,6 +191,8 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		// check if jwt is expired
 		exp := claims["exp"].(float64)
 		expTime := time.Unix(int64(exp), 0)
+
+		log.Println(expTime)
 
 		if time.Now().After(expTime) {
 			response := data_objects.ErroredResponseObject{
