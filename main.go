@@ -15,6 +15,7 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
+	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -133,7 +134,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
-		authorized := Authorize(r)
+		claims, authorized := Authorize(r)
 
 		if !authorized {
 			repsonse := struct {
@@ -151,22 +152,28 @@ func baseMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 
+		if nil != claims {
+			// pass claims to next handler
+			ctx := context.WithValue(r.Context(), "claims", claims)
+			r = r.WithContext(ctx)
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
 
-func Authorize(r *http.Request) bool {
+func Authorize(r *http.Request) (jwt.MapClaims, bool) {
 	exempted_paths := getExemptedPaths()
 
 	// if not POST, PUT or DELETE, just continue
 	if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
-		return true
+		return nil, true
 	}
 
 	// if path is exempted, just continue
 	for _, path := range exempted_paths {
 		if r.URL.Path == path {
-			return true
+			return nil, true
 		}
 	}
 
@@ -174,23 +181,19 @@ func Authorize(r *http.Request) bool {
 	token := r.Header.Get("Authorization")
 	log.Println(token)
 
-	if token == "" {
-		log.Println("No token present")
-		return false
+	claims, authorized, err := auth.CheckToken(token)
+
+	if nil != err {
+		log.Println("Error checking token: ", err)
+		return nil, false
 	}
 
-	// parse jwt
-	claims := jwt.MapClaims{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(viper.GetString("jwt.secret")), nil
-	})
-
-	if err != nil {
-		log.Println("Error parsing jwt: ", err)
-		return false
+	if !authorized {
+		log.Println("Unauthorized")
+		return nil, false
 	}
 
-	return true
+	return claims, true
 }
 
 func getExemptedPaths() []string {

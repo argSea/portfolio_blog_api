@@ -8,8 +8,16 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
+	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
+)
+
+// consts
+const (
+	// permissions
+	PERM_USER  = "user"
+	PERM_ADMIN = "admin"
 )
 
 //FROM USER TO APP
@@ -21,14 +29,7 @@ type userMuxAdapter struct {
 	jtwSecret []byte
 }
 
-func NewUserMuxAdapter(
-	user in_port.UserCRUDService,
-	auth in_port.UserAuthService,
-	resume in_port.UserResumeService,
-	project in_port.UserProjectService,
-	jtwSecret []byte,
-	m *mux.Router) {
-
+func NewUserMuxAdapter(user in_port.UserCRUDService, auth in_port.UserAuthService, resume in_port.UserResumeService, project in_port.UserProjectService, jtwSecret []byte, m *mux.Router) {
 	u := &userMuxAdapter{
 		user:      user,
 		auth:      auth,
@@ -117,6 +118,13 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// check auth
+	authorized := checkAuth(r, w, "")
+
+	if !authorized {
+		return
+	}
+
 	var user domain.User
 	json.NewDecoder(r.Body).Decode(&user)
 
@@ -182,6 +190,12 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	user.Id = id
+
+	// check auth
+	if !checkAuth(r, w, id) {
+		return
+	}
+
 	updated_err := u.user.Update(user)
 
 	var resp interface{}
@@ -218,6 +232,12 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	user.Id = id
+
+	// check auth
+	if !checkAuth(r, w, id) {
+		return
+	}
+
 	deleted_err := u.user.Delete(user)
 
 	var resp interface{}
@@ -296,4 +316,37 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
+	token := r.Header.Get("Authorization")
+	claims, authorized := auth.AuthorizeRole(token, auth.PERM_USER, auth.PERM_ADMIN)
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+		return false
+	}
+
+	if claims["role"] != auth.PERM_ADMIN {
+		if claims["userID"] != userID {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    401,
+				Message: "Unauthorized",
+			}
+
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(response)
+			return false
+		}
+	}
+
+	return true
 }
