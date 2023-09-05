@@ -64,7 +64,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    400,
-			Message: err,
+			Message: err.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
 		return
@@ -76,8 +76,6 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = user_id
 	tokenString, _ := token.SignedString(key)
-
-	w.Header().Set("Content-Type", "application/json")
 
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
 		Status: "ok",
