@@ -54,6 +54,8 @@ func (u userCRUDService) Update(user domain.User) error {
 		}
 
 		user.Password = domain.Password(new_pass)
+	} else {
+		user.Password = ""
 	}
 
 	if nil == err {
