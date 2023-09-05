@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,8 +14,6 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
-	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -139,8 +136,17 @@ func main() {
 	userService := service.NewUserCRUDService(userMongoAdapter)
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
-	userAuthService := service.NewUserAuthService(userMongoAdapter)
-	in_adapter.NewUserMuxAdapter(userService, userAuthService, userResumeService, userProjectService, jSecret, userRouter)
+	userLoginService := service.NewUserLoginService(userMongoAdapter)
+	userJWTService := service.NewJWTAuthService(jSecret)
+	userMuxServices := in_adapter.UserMuxServices{
+		User:    userService,
+		Resume:  userResumeService,
+		Project: userProjectService,
+		Login:   userLoginService,
+		Auth:    userJWTService,
+	}
+
+	in_adapter.NewUserMuxAdapter(userMuxServices, userRouter)
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
@@ -164,73 +170,6 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
-		claims, authorized := Authorize(r)
-
-		if !authorized {
-			repsonse := struct {
-				Status  string `json:"status"`
-				Code    int    `json:"code"`
-				Message string `json:"message"`
-			}{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized",
-			}
-
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(repsonse)
-			return
-		}
-
-		if nil != claims {
-			// pass claims to next handler
-			ctx := context.WithValue(r.Context(), "claims", claims)
-			r = r.WithContext(ctx)
-		}
-
 		next.ServeHTTP(w, r)
 	})
-}
-
-func Authorize(r *http.Request) (jwt.MapClaims, bool) {
-	exempted_paths := getExemptedPaths()
-
-	// if not POST, PUT or DELETE, just continue
-	if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
-		return nil, true
-	}
-
-	// if path is exempted, just continue
-	for _, path := range exempted_paths {
-		if r.URL.Path == path {
-			return nil, true
-		}
-	}
-
-	// check if jwt is present
-	token := r.Header.Get("Authorization")
-	log.Println(token)
-
-	claims, authorized, err := auth.CheckToken(token)
-
-	if nil != err {
-		log.Println("Error checking token: ", err)
-		return nil, false
-	}
-
-	if !authorized {
-		log.Println("Unauthorized")
-		return nil, false
-	}
-
-	return claims, true
-}
-
-func getExemptedPaths() []string {
-	exemptedPaths := []string{
-		"/1/user/login/",
-		"/1/user/signup/",
-	}
-
-	return exemptedPaths
 }

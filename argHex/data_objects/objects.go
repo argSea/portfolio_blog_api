@@ -73,3 +73,9 @@ type NewProjectResponseObject struct {
 	Code      int64  `json:"code"`
 	ProjectID string `json:"projectID"`
 }
+
+type AuthValidationResponseObject struct {
+	Valid  bool   `json:"valid"`
+	Role   string `json:"roles"`
+	UserID string `json:"userID"`
+}

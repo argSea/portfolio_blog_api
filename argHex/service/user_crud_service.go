@@ -6,7 +6,6 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
-	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
 )
 
 type userCRUDService struct {
@@ -38,16 +37,7 @@ func (u userCRUDService) Read(id string) domain.User {
 }
 
 func (u userCRUDService) Update(user domain.User) error {
-	new_pass, err := auth.HashPassword(string(user.Password))
-
-	if nil != err {
-		log.Printf("Error hashing password: %v\n", err)
-		return err
-	}
-
-	user.Password = domain.Password(new_pass)
-
-	err = u.repo.Set(user)
+	err := u.repo.Set(user)
 
 	if nil == err {
 		log.Printf("User updated, user: %v\n", user)

@@ -3,13 +3,10 @@ package in_adapter
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
-	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 )
 
@@ -20,22 +17,30 @@ const (
 	PERM_ADMIN = "admin"
 )
 
-//FROM USER TO APP
-type userMuxAdapter struct {
-	user      in_port.UserCRUDService
-	auth      in_port.UserAuthService
-	resume    in_port.UserResumeService
-	project   in_port.UserProjectService
-	jtwSecret []byte
+type UserMuxServices struct {
+	User    in_port.UserCRUDService
+	Login   in_port.UserLoginService
+	Resume  in_port.UserResumeService
+	Project in_port.UserProjectService
+	Auth    in_port.AuthService
 }
 
-func NewUserMuxAdapter(user in_port.UserCRUDService, auth in_port.UserAuthService, resume in_port.UserResumeService, project in_port.UserProjectService, jtwSecret []byte, m *mux.Router) {
+//FROM USER TO APP
+type userMuxAdapter struct {
+	user    in_port.UserCRUDService
+	login   in_port.UserLoginService
+	resume  in_port.UserResumeService
+	project in_port.UserProjectService
+	auth    in_port.AuthService
+}
+
+func NewUserMuxAdapter(muxService UserMuxServices, m *mux.Router) {
 	u := &userMuxAdapter{
-		user:      user,
-		auth:      auth,
-		resume:    resume,
-		project:   project,
-		jtwSecret: jtwSecret,
+		user:    muxService.User,
+		login:   muxService.Login,
+		resume:  muxService.Resume,
+		project: muxService.Project,
+		auth:    muxService.Auth,
 	}
 
 	//user service
@@ -69,7 +74,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	user_id, err := u.auth.Login(user)
+	user_id, err := u.login.Login(user)
 
 	if nil != err {
 		response := data_objects.ErroredResponseObject{
@@ -81,28 +86,22 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// create jwt token
-	key := u.jtwSecret
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["userID"] = user_id
-	// get time since epoch
-	time_now := time.Now()
-	// add 30 days
-	time_30_days := time_now.AddDate(0, 0, 30)
-	claims["exp"] = time_30_days.Unix()
-	claims["iat"] = time_now.Unix()
-	//q: any other claims we want to add?
-	claims["role"] = "user"
+	token, auth_error := u.auth.Generate(user_id)
 
-	// later we can add a claim to make my user an admin
-	// claims["role"] = "admin"
-	tokenString, _ := token.SignedString(key)
+	if nil != auth_error {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_error.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
 		Status: "ok",
 		Code:   200,
-		Token:  tokenString,
+		Token:  token,
 	})
 }
 
@@ -119,7 +118,7 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// check auth
-	authorized := checkAuth(r, w, "")
+	authorized := u.checkAuth(r, w, "")
 
 	if !authorized {
 		return
@@ -192,7 +191,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	if !checkAuth(r, w, id) {
+	if !u.checkAuth(r, w, id) {
 		return
 	}
 
@@ -234,7 +233,7 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	if !checkAuth(r, w, id) {
+	if !u.checkAuth(r, w, id) {
 		return
 	}
 
@@ -318,9 +317,17 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
+func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
 	token := r.Header.Get("Authorization")
-	claims, authorized := auth.AuthorizeRole(token, auth.PERM_USER, auth.PERM_ADMIN)
+
+	// check if user is authorized
+	authorized := false
+
+	if "" != userID {
+		authorized = u.auth.IsAuthorized(userID, token, PERM_USER, PERM_ADMIN)
+	} else {
+		authorized = u.auth.IsAuthorized(userID, token, PERM_ADMIN)
+	}
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -332,20 +339,6 @@ func checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(response)
 		return false
-	}
-
-	if claims["role"] != auth.PERM_ADMIN {
-		if claims["userID"] != userID {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized",
-			}
-
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(response)
-			return false
-		}
 	}
 
 	return true
