@@ -14,6 +14,7 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -131,99 +132,59 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
-		// exemptedPaths := []string{
-		// 	"/1/user/login/",
-		// 	"/1/user/signup/",
-		// }
+		authorized := Authorize(r)
 
-		// // if not POST, PUT or DELETE, just continue
-		// if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
-		// 	next.ServeHTTP(w, r)
-		// 	return
-		// }
-
-		// // if path is exempted, just continue
-		// for _, path := range exemptedPaths {
-		// 	if r.URL.Path == path {
-		// 		next.ServeHTTP(w, r)
-		// 		return
-		// 	}
-		// }
-
-		// // check if jwt is present
-		// token := r.Header.Get("Authorization")
-		// log.Println(token)
-
-		// if token == "" {
-		// 	response := data_objects.ErroredResponseObject{
-		// 		Status:  "error",
-		// 		Code:    401,
-		// 		Message: "Unauthorized",
-		// 	}
-		// 	json.NewEncoder(w).Encode(response)
-
-		// 	return
-		// }
-
-		// // parse jwt
-		// claims := jwt.MapClaims{}
-		// _, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		// 	return []byte(viper.GetString("jwt.secret")), nil
-		// })
-
-		// log.Println(claims)
-		// log.Println(err)
-
-		// if err != nil {
-		// 	response := data_objects.ErroredResponseObject{
-		// 		Status:  "error",
-		// 		Code:    401,
-		// 		Message: "Unauthorized: " + err.Error(),
-		// 	}
-		// 	json.NewEncoder(w).Encode(response)
-
-		// 	return
-		// }
-
-		// // get userID from jwt
-		// userID := claims["userID"].(string)
-
-		// // check if userID is present in the URL or in the body
-		// // get post or put body
-		// body := map[string]interface{}{}
-		// json.NewDecoder(r.Body).Decode(&body)
-
-		// check_1 := false
-		// check_2 := false
-
-		// // check if a userID field is present in the body
-		// if _, ok := body["userID"]; ok {
-		// 	// check if the userID in the body matches with the userID in the jwt
-		// 	if body["userID"] == userID {
-		// 		check_1 = true
-		// 	}
-		// }
-
-		// // check if any vars are present in the URL
-		// if len(mux.Vars(r)) > 0 {
-		// 	// check if the userID in the URL matches with the userID in the jwt
-		// 	if mux.Vars(r)["id"] == userID {
-		// 		check_2 = true
-		// 	}
-		// }
-
-		// // if userID is not present in the body or the URL, just continue
-		// if !check_1 && !check_2 {
-		// 	response := data_objects.ErroredResponseObject{
-		// 		Status:  "error",
-		// 		Code:    401,
-		// 		Message: "Unauthorized",
-		// 	}
-		// 	json.NewEncoder(w).Encode(response)
-
-		// 	return
-		// }
+		if !authorized {
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func Authorize(r *http.Request) bool {
+	exempted_paths := getExemptedPaths()
+
+	// if not POST, PUT or DELETE, just continue
+	if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
+		return true
+	}
+
+	// if path is exempted, just continue
+	for _, path := range exempted_paths {
+		if r.URL.Path == path {
+			return true
+		}
+	}
+
+	// check if jwt is present
+	token := r.Header.Get("Authorization")
+	log.Println(token)
+
+	if token == "" {
+		log.Println("No token present")
+		return false
+	}
+
+	// parse jwt
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(viper.GetString("jwt.secret")), nil
+	})
+
+	if err != nil {
+		log.Println("Error parsing jwt: ", err)
+		return false
+	}
+
+	return true
+}
+
+func getExemptedPaths() []string {
+	exemptedPaths := []string{
+		"/1/user/login/",
+		"/1/user/signup/",
+	}
+
+	return exemptedPaths
 }
