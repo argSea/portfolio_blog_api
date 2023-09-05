@@ -90,6 +90,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	// add 30 days
 	time_now.AddDate(0, 0, 30)
 	claims["exp"] = time_now.Unix()
+	claims["iat"] = time_now.Unix()
 	//q: any other claims we want to add?
 	claims["role"] = "user"
 
