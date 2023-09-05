@@ -67,6 +67,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 			Message: err,
 		}
 		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	// create jwt token
