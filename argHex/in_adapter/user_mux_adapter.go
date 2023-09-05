@@ -84,8 +84,8 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = user_id
-	// expire in 30 days
-	claims["exp"] = 30
+	// expire in 30 days in seconds
+	claims["exp"] = 30 * 24 * 60 * 60
 	//q: any other claims we want to add?
 	claims["role"] = "user"
 
