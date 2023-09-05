@@ -177,7 +177,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 			response := data_objects.ErroredResponseObject{
 				Status:  "error",
 				Code:    401,
-				Message: "Unauthorized",
+				Message: "Unauthorized: " + err.Error(),
 			}
 			json.NewEncoder(w).Encode(response)
 
@@ -192,7 +192,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 			response := data_objects.ErroredResponseObject{
 				Status:  "error",
 				Code:    401,
-				Message: "Unauthorized",
+				Message: "Unauthorized: Token expired",
 			}
 			json.NewEncoder(w).Encode(response)
 
@@ -211,8 +211,9 @@ func baseMiddleWare(next http.Handler) http.Handler {
 				response := data_objects.ErroredResponseObject{
 					Status:  "error",
 					Code:    401,
-					Message: "Unauthorized",
+					Message: "Unauthorized: userID in body does not match with token" + body["userID"].(string) + " " + userID,
 				}
+
 				json.NewEncoder(w).Encode(response)
 
 				return
@@ -222,7 +223,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 				response := data_objects.ErroredResponseObject{
 					Status:  "error",
 					Code:    401,
-					Message: "Unauthorized",
+					Message: "Unauthorized: userID in URL does not match with token" + mux.Vars(r)["id"] + " " + userID,
 				}
 				json.NewEncoder(w).Encode(response)
 
@@ -232,8 +233,4 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}
-
-func contains(exemptedPaths []string, s string) {
-	panic("unimplemented")
 }
