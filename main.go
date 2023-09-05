@@ -37,6 +37,20 @@ func init() {
 		}
 	}
 
+	if "" == log_file {
+		log.Fatal("No log file found")
+		os.Exit(1)
+	}
+
+	//logger
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log_file_fh, log_file_err := os.OpenFile(log_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
+	if nil != log_file_err {
+		log.Fatal(log_file_err)
+	}
+
+	log.SetOutput(log_file_fh)
+
 	if "" != config {
 		viper.SetConfigFile(config)
 	} else {
@@ -45,23 +59,12 @@ func init() {
 		os.Exit(1)
 	}
 
-	if "" == log_file {
-		log.Fatal("No log file found")
-		os.Exit(1)
-	}
-
 	// read config
 	err := viper.ReadInConfig()
 
 	if nil != err {
-		panic(err)
-	}
-
-	//logger
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	log_file_fh, log_file_err := os.OpenFile(log_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
-	if nil != log_file_err {
-		log.Fatal(log_file_err)
+		log.Fatal(err)
+		os.Exit(1)
 	}
 
 	//signal to kill and print final info
@@ -74,8 +77,6 @@ func init() {
 		fmt.Println("Shutting down argSea API")
 		os.Exit(0)
 	}()
-
-	log.SetOutput(log_file_fh)
 }
 
 func main() {
