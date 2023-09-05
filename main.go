@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,12 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/in_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -134,98 +131,98 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
-		exemptedPaths := []string{
-			"/1/user/login/",
-			"/1/user/signup/",
-		}
+		// exemptedPaths := []string{
+		// 	"/1/user/login/",
+		// 	"/1/user/signup/",
+		// }
 
-		// if not POST, PUT or DELETE, just continue
-		if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
-			next.ServeHTTP(w, r)
-			return
-		}
+		// // if not POST, PUT or DELETE, just continue
+		// if r.Method != "POST" && r.Method != "PUT" && r.Method != "DELETE" {
+		// 	next.ServeHTTP(w, r)
+		// 	return
+		// }
 
-		// if path is exempted, just continue
-		for _, path := range exemptedPaths {
-			if r.URL.Path == path {
-				next.ServeHTTP(w, r)
-				return
-			}
-		}
+		// // if path is exempted, just continue
+		// for _, path := range exemptedPaths {
+		// 	if r.URL.Path == path {
+		// 		next.ServeHTTP(w, r)
+		// 		return
+		// 	}
+		// }
 
-		// check if jwt is present
-		token := r.Header.Get("Authorization")
-		log.Println(token)
+		// // check if jwt is present
+		// token := r.Header.Get("Authorization")
+		// log.Println(token)
 
-		if token == "" {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized",
-			}
-			json.NewEncoder(w).Encode(response)
+		// if token == "" {
+		// 	response := data_objects.ErroredResponseObject{
+		// 		Status:  "error",
+		// 		Code:    401,
+		// 		Message: "Unauthorized",
+		// 	}
+		// 	json.NewEncoder(w).Encode(response)
 
-			return
-		}
+		// 	return
+		// }
 
-		// parse jwt
-		claims := jwt.MapClaims{}
-		_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte(viper.GetString("jwt.secret")), nil
-		})
+		// // parse jwt
+		// claims := jwt.MapClaims{}
+		// _, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		// 	return []byte(viper.GetString("jwt.secret")), nil
+		// })
 
-		log.Println(claims)
-		log.Println(err)
+		// log.Println(claims)
+		// log.Println(err)
 
-		if err != nil {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized: " + err.Error(),
-			}
-			json.NewEncoder(w).Encode(response)
+		// if err != nil {
+		// 	response := data_objects.ErroredResponseObject{
+		// 		Status:  "error",
+		// 		Code:    401,
+		// 		Message: "Unauthorized: " + err.Error(),
+		// 	}
+		// 	json.NewEncoder(w).Encode(response)
 
-			return
-		}
+		// 	return
+		// }
 
-		// get userID from jwt
-		userID := claims["userID"].(string)
+		// // get userID from jwt
+		// userID := claims["userID"].(string)
 
-		// check if userID is present in the URL or in the body
-		// get post or put body
-		body := map[string]interface{}{}
-		json.NewDecoder(r.Body).Decode(&body)
+		// // check if userID is present in the URL or in the body
+		// // get post or put body
+		// body := map[string]interface{}{}
+		// json.NewDecoder(r.Body).Decode(&body)
 
-		check_1 := false
-		check_2 := false
+		// check_1 := false
+		// check_2 := false
 
-		// check if a userID field is present in the body
-		if _, ok := body["userID"]; ok {
-			// check if the userID in the body matches with the userID in the jwt
-			if body["userID"] == userID {
-				check_1 = true
-			}
-		}
+		// // check if a userID field is present in the body
+		// if _, ok := body["userID"]; ok {
+		// 	// check if the userID in the body matches with the userID in the jwt
+		// 	if body["userID"] == userID {
+		// 		check_1 = true
+		// 	}
+		// }
 
-		// check if any vars are present in the URL
-		if len(mux.Vars(r)) > 0 {
-			// check if the userID in the URL matches with the userID in the jwt
-			if mux.Vars(r)["id"] == userID {
-				check_2 = true
-			}
-		}
+		// // check if any vars are present in the URL
+		// if len(mux.Vars(r)) > 0 {
+		// 	// check if the userID in the URL matches with the userID in the jwt
+		// 	if mux.Vars(r)["id"] == userID {
+		// 		check_2 = true
+		// 	}
+		// }
 
-		// if userID is not present in the body or the URL, just continue
-		if !check_1 && !check_2 {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    401,
-				Message: "Unauthorized",
-			}
-			json.NewEncoder(w).Encode(response)
+		// // if userID is not present in the body or the URL, just continue
+		// if !check_1 && !check_2 {
+		// 	response := data_objects.ErroredResponseObject{
+		// 		Status:  "error",
+		// 		Code:    401,
+		// 		Message: "Unauthorized",
+		// 	}
+		// 	json.NewEncoder(w).Encode(response)
 
-			return
-		}
+		// 	return
+		// }
 
 		next.ServeHTTP(w, r)
 	})
