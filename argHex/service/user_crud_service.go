@@ -39,8 +39,6 @@ func (u userCRUDService) Read(id string) domain.User {
 }
 
 func (u userCRUDService) Update(user domain.User) error {
-	err := u.repo.Set(user)
-
 	// compare passwords with bcrypt
 	check_pass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
 
@@ -57,6 +55,8 @@ func (u userCRUDService) Update(user domain.User) error {
 	} else {
 		user.Password = ""
 	}
+
+	err := u.repo.Set(user)
 
 	if nil == err {
 		log.Printf("User updated, user: %v\n", user)
