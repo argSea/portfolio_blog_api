@@ -3,6 +3,7 @@ package in_adapter
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
@@ -84,8 +85,11 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["userID"] = user_id
-	// expire in 30 days in seconds
-	claims["exp"] = 30 * 24 * 60 * 60
+	// get time since epoch
+	time_now := time.Now()
+	// add 30 days
+	time_now.AddDate(0, 0, 30)
+	claims["exp"] = time_now.Unix()
 	//q: any other claims we want to add?
 	claims["role"] = "user"
 
