@@ -40,14 +40,14 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 		Id:      id,
 	}
 
-	json_data, json_err := json.Marshal(data)
+	// json_data, json_err := json.Marshal(data)
 
-	if nil != json_err {
-		return "", json_err
-	}
+	// if nil != json_err {
+	// 	return "", json_err
+	// }
 
 	// store token, id, and expiration in json format
-	err := s.repo.Store(token, json_data)
+	err := s.repo.Store(token, data)
 
 	if nil != err {
 		return "", err
