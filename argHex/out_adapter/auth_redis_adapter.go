@@ -23,8 +23,8 @@ func (a authRedisAdapter) Get(id string) string {
 	return data
 }
 
-func (a authRedisAdapter) Store(token string, data interface{}) error {
-	err := a.store.Set(token, data)
+func (a authRedisAdapter) Store(token string, expires int64, data interface{}) error {
+	err := a.store.Set(token, expires, data)
 
 	return err
 }

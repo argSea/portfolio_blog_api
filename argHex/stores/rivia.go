@@ -26,7 +26,7 @@ func (r *Rivia) Get(id string) string {
 	return data.String()
 }
 
-func (r *Rivia) Set(id string, data interface{}) error {
+func (r *Rivia) Set(id string, expires int64, data interface{}) error {
 	// change db to r.db
 	r.redis.client.Conn().Select(r.ctx, r.db)
 

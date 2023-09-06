@@ -21,9 +21,6 @@ func (s sessionAuthData) MarshalBinary() (data []byte, err error) {
 	return bytes, err
 }
 
-// q: what marshaller works with redis? json or bson?
-// a: json
-
 type sessionAuthService struct {
 	repo   out_port.AuthRepo
 	secret []byte
@@ -39,7 +36,8 @@ func NewSessionAuthService(repo out_port.AuthRepo, secret []byte) in_port.AuthSe
 // NewAuth
 func (s sessionAuthService) Generate(id string) (string, error) {
 	token := uuid.New().String()
-	expires := time.Now().Add(time.Hour * 24 * 7) // 7 days
+	// expires := time.Now().Add(time.Hour * 24 * 7) // 7 days
+	expires := time.Now().Add(time.Minute * 1) // 1 minute
 	roles := []string{"user"}
 
 	data := sessionAuthData{
@@ -48,7 +46,7 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 		Id:      id,
 	}
 
-	err := s.repo.Store(token, data)
+	err := s.repo.Store(token, expires.Unix(), data)
 
 	if nil != err {
 		return "", err
