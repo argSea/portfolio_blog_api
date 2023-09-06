@@ -93,6 +93,7 @@ func main() {
 	mDB := viper.GetString("mongo.dbName")
 	jSecret := []byte(viper.GetString("jwt.secret"))
 
+	//setup mongo
 	mongo_db, mongo_err := stores.NewMongoStore(mUser, mPass, mHost, mDB)
 
 	defer mongo_db.Client.Disconnect(context.Background())
@@ -103,9 +104,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	// setup redis
+	redis_host := viper.GetString("redis.host")
+	redis_port := viper.GetString("redis.port")
+	redis_pass := viper.GetString("redis.pass")
+
+	redis_store, redis_err := stores.NewRedisStore(redis_host, redis_port, redis_pass)
+
+	if nil != redis_err {
+		fmt.Fprintf(os.Stderr, "error: %v\n", redis_err)
+		log.Fatal(redis_err)
+		os.Exit(1)
+	}
+
 	user_table := "users"
 	projectTable := "projects"
 	resumeTable := "resume"
+	authDB := 13
 
 	//user
 	userRouter := router.PathPrefix("/1/user/").Subrouter()
@@ -137,13 +152,17 @@ func main() {
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
 	userLoginService := service.NewUserLoginService(userMongoAdapter)
-	userJWTService := service.NewJWTAuthService(jSecret)
+	// userJWTService := service.NewJWTAuthService(jSecret)
+
+	authRivia := stores.NewRivia(redis_store, authDB)
+	authRedisAdapter := out_adapter.NewAuthRedisAdapter(authRivia)
+	userSessionService := service.NewSessionAuthService(authRedisAdapter, jSecret)
 	userMuxServices := in_adapter.UserMuxServices{
 		User:    userService,
 		Resume:  userResumeService,
 		Project: userProjectService,
 		Login:   userLoginService,
-		Auth:    userJWTService,
+		Auth:    userSessionService,
 	}
 
 	in_adapter.NewUserMuxAdapter(userMuxServices, userRouter)
