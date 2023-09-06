@@ -108,8 +108,9 @@ func main() {
 	redis_host := viper.GetString("redis.host")
 	redis_port := viper.GetString("redis.port")
 	redis_pass := viper.GetString("redis.pass")
+	redis_user := viper.GetString("redis.user")
 
-	redis_store, redis_err := stores.NewRedisStore(redis_host, redis_port, redis_pass)
+	redis_store, redis_err := stores.NewRedisStore(redis_host, redis_port, redis_user, redis_pass)
 
 	if nil != redis_err {
 		fmt.Fprintf(os.Stderr, "error: %v\n", redis_err)
