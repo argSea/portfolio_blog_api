@@ -21,9 +21,6 @@ func NewRivia(redis *Redis, db int) *Rivia {
 }
 
 func (r *Rivia) Get(id string) string {
-	// change db to r.db
-	r.redis.client.Conn().Select(r.ctx, r.db)
-
 	data := r.redis.client.Get(r.ctx, id)
 
 	return data.String()

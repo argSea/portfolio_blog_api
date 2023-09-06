@@ -13,7 +13,7 @@ type Redis struct {
 	ctx    context.Context
 }
 
-func NewRedisStore(redis_host string, redis_port string, redis_user string, redis_pass string) (*Redis, error) {
+func NewRedisStore(redis_host string, redis_port string, redis_user string, redis_pass string, redis_db int) (*Redis, error) {
 	redisDB := new(Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second+10)
 
@@ -23,6 +23,7 @@ func NewRedisStore(redis_host string, redis_port string, redis_user string, redi
 		Addr:     redis_host + ":" + redis_port,
 		Username: redis_user,
 		Password: redis_pass,
+		DB:       redis_db,
 	})
 
 	redisDB.ctx = ctx
