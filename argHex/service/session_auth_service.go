@@ -11,10 +11,18 @@ import (
 )
 
 type sessionAuthData struct {
-	Expires time.Time `json:"expires"`
-	Roles   []string  `json:"roles"`
-	Id      string    `json:"id"`
+	Expires time.Time `json:"expires" bson:"expires"`
+	Roles   []string  `json:"roles" bson:"roles"`
+	Id      string    `json:"id" bson:"id"`
 }
+
+func (s sessionAuthData) MarshalBinary() (data []byte, err error) {
+	bytes, err := json.Marshal(s)
+	return bytes, err
+}
+
+// q: what marshaller works with redis? json or bson?
+// a: json
 
 type sessionAuthService struct {
 	repo   out_port.AuthRepo
@@ -40,13 +48,6 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 		Id:      id,
 	}
 
-	// json_data, json_err := json.Marshal(data)
-
-	// if nil != json_err {
-	// 	return "", json_err
-	// }
-
-	// store token, id, and expiration in json format
 	err := s.repo.Store(token, data)
 
 	if nil != err {
