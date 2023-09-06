@@ -46,7 +46,7 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 		Id:      id,
 	}
 
-	err := s.repo.Store(token, expires.Unix(), data)
+	err := s.repo.Store(token, time.Minute*1, data)
 
 	if nil != err {
 		return "", err

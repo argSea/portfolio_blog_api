@@ -3,6 +3,7 @@ package stores
 // import redis
 import (
 	"context"
+	"time"
 )
 
 type Rivia struct {
@@ -26,11 +27,11 @@ func (r *Rivia) Get(id string) string {
 	return data.String()
 }
 
-func (r *Rivia) Set(id string, expires int64, data interface{}) error {
+func (r *Rivia) Set(id string, expires time.Duration, data interface{}) error {
 	// change db to r.db
 	r.redis.client.Conn().Select(r.ctx, r.db)
 
-	err := r.redis.client.Set(r.ctx, id, data, 0).Err()
+	err := r.redis.client.Set(r.ctx, id, data, expires).Err()
 
 	if nil != err {
 		return err

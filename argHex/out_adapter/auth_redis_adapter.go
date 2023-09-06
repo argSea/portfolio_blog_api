@@ -1,6 +1,8 @@
 package out_adapter
 
 import (
+	"time"
+
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
 )
@@ -23,7 +25,7 @@ func (a authRedisAdapter) Get(id string) string {
 	return data
 }
 
-func (a authRedisAdapter) Store(token string, expires int64, data interface{}) error {
+func (a authRedisAdapter) Store(token string, expires time.Duration, data interface{}) error {
 	err := a.store.Set(token, expires, data)
 
 	return err
