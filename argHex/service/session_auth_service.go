@@ -53,7 +53,7 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 		return "", err
 	}
 
-	return "", nil
+	return token, nil
 }
 
 // Validate

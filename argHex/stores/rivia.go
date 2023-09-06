@@ -30,6 +30,14 @@ func (r *Rivia) Get(id string) string {
 }
 
 func (r *Rivia) Set(id string, data interface{}) error {
+	// change db to r.db
+	r.redis.client.Conn().Select(r.ctx, r.db)
+
+	err := r.redis.client.Set(r.ctx, id, data, 0).Err()
+
+	if nil != err {
+		return err
+	}
 
 	return nil
 }
