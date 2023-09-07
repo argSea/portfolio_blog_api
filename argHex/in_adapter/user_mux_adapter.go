@@ -342,12 +342,19 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 	}
 
 	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
+	session.Options = &sessions.Options{
+		Domain:   "argsea.com",
+		Path:     "/",
+		MaxAge:   expires.Second(),
+		HttpOnly: true,
+	}
 
 	if nil != session_err {
 		return "", session_err
 	}
 
 	session.Values["token"] = token
+	session.Values["iat"] = time.Now().Unix()
 	// session.Values["exp"] = expires
 	// session.Values["roles"] = roles
 
