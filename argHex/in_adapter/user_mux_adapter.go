@@ -392,7 +392,7 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 	session.Options = &sessions.Options{
 		// Domain:   "argsea.com",
 		Path:     "/",
-		MaxAge:   expires.Second(),
+		MaxAge:   24 * 60 * 60,
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
