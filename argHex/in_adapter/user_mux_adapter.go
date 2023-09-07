@@ -348,8 +348,8 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 	}
 
 	session.Values["token"] = token
-	session.Values["exp"] = expires
-	session.Values["roles"] = roles
+	// session.Values["exp"] = expires
+	// session.Values["roles"] = roles
 
 	session.Save(r, w)
 	log.Println("Cookie set: ", session)
