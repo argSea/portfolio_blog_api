@@ -101,9 +101,8 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		Token:  token,
 	})
 
-	// write token to cookie using gorilla sessions
-	cookieStore := sessions.NewCookieStore(u.secret)
-	session, session_err := cookieStore.Get(r, "auth-token")
+	// write token to http only cookie
+	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
 
 	if nil != session_err {
 		response := data_objects.ErroredResponseObject{
@@ -116,7 +115,6 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Values["token"] = token
-
 	session.Save(r, w)
 }
 
