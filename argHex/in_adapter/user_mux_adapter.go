@@ -120,6 +120,13 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	authorized := u.checkAuth(r, w, "")
 
 	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		json.NewEncoder(w).Encode(response)
+
 		return
 	}
 
@@ -190,7 +197,16 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	if !u.checkAuth(r, w, id) {
+	authorized := u.checkAuth(r, w, id)
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		json.NewEncoder(w).Encode(response)
+
 		return
 	}
 
@@ -248,7 +264,16 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	if !u.checkAuth(r, w, id) {
+	authorized := u.checkAuth(r, w, id)
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		json.NewEncoder(w).Encode(response)
+
 		return
 	}
 
@@ -369,6 +394,7 @@ func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
 
 	if nil != session_err {
+		log.Println("Error getting session: ", session_err)
 		return false
 	}
 
@@ -378,14 +404,7 @@ func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 	authorized := u.auth.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)
 
 	if !authorized {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
-		}
-
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(response)
+		log.Println("User not authorized! " + userID)
 		return false
 	}
 
