@@ -20,7 +20,7 @@ func NewJWTAuthService(secret []byte) in_port.AuthService {
 }
 
 // NewAuth
-func (j jwtAuthService) Generate(id string) (string, error) {
+func (j jwtAuthService) Generate(id string, expires time.Time, roles []string) (string, error) {
 	// create jwt token
 	key := j.jwtSecret
 	token := jwt.New(jwt.SigningMethodHS256)

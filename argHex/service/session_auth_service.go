@@ -32,11 +32,8 @@ func NewSessionAuthService(repo out_port.AuthRepo) in_port.AuthService {
 }
 
 // NewAuth
-func (s sessionAuthService) Generate(id string) (string, error) {
+func (s sessionAuthService) Generate(id string, expires time.Time, roles []string) (string, error) {
 	token := uuid.New().String()
-	// expires := time.Now().Add(time.Hour * 24 * 7) // 7 days
-	expires := time.Now().Add(time.Minute * 1) // 1 minute
-	roles := []string{"user"}
 
 	data := sessionAuthData{
 		Expires: expires,

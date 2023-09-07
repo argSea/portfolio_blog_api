@@ -20,7 +20,7 @@ func NewUserLoginService(repo out_port.UserRepo) in_port.UserLoginService {
 	}
 }
 
-func (u userLoginService) Login(user domain.User) (string, error) {
+func (u userLoginService) Login(user domain.User) (domain.User, error) {
 	// get user from repo
 	logged_in_user := u.repo.GetByUserName(user.UserName)
 
@@ -33,11 +33,11 @@ func (u userLoginService) Login(user domain.User) (string, error) {
 		err := errors.New("Incorrect credentials or user does not exist")
 
 		log.Printf("User not logged in. err: %v", err)
-		return "", err
+		return domain.User{}, err
 	}
 
 	log.Printf("User logged in with ID: %v\n", logged_in_user.Id)
-	return logged_in_user.Id, nil
+	return logged_in_user, nil
 
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
@@ -72,7 +73,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	user_id, err := u.login.Login(user)
+	user, err := u.login.Login(user)
 
 	if nil != err {
 		response := data_objects.ErroredResponseObject{
@@ -84,34 +85,17 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, auth_error := u.auth.Generate(user_id)
+	token, token_error := u.setSession(user.Id, w, r)
 
-	if nil != auth_error {
+	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    500,
-			Message: auth_error.Error(),
+			Message: token_error.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-
-	// write token to http only cookie
-	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
-
-	if nil != session_err {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: session_err.Error(),
-		}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	session.Values["token"] = token
-	session.Save(r, w)
-	log.Println("Cookie set: ", session)
 
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
 		Status: "ok",
@@ -348,6 +332,31 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *http.Request) (string, error) {
+	expires := time.Now().Add(time.Hour * 24)
+	roles := []string{"user"}
+	token, auth_error := u.auth.Generate(user_id, expires, roles)
+
+	if nil != auth_error {
+		return "", auth_error
+	}
+
+	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
+
+	if nil != session_err {
+		return "", session_err
+	}
+
+	session.Values["token"] = token
+	session.Values["exp"] = expires
+	session.Values["roles"] = roles
+
+	session.Save(r, w)
+	log.Println("Cookie set: ", session)
+
+	return token, nil
+}
+
 func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
 	// token := r.Header.Get("Authorization")
 	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
@@ -372,6 +381,9 @@ func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 		json.NewEncoder(w).Encode(response)
 		return false
 	}
+
+	// if authorized, refresh token
+	u.setSession(userID, w, r)
 
 	return true
 }
