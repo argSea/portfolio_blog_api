@@ -8,6 +8,7 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 type UserMuxServices struct {
@@ -16,6 +17,7 @@ type UserMuxServices struct {
 	Resume  in_port.UserResumeService
 	Project in_port.UserProjectService
 	Auth    in_port.AuthService
+	Secret  []byte
 }
 
 //FROM USER TO APP
@@ -25,6 +27,7 @@ type userMuxAdapter struct {
 	resume  in_port.UserResumeService
 	project in_port.UserProjectService
 	auth    in_port.AuthService
+	secret  []byte
 }
 
 func NewUserMuxAdapter(muxService UserMuxServices, m *mux.Router) {
@@ -34,6 +37,7 @@ func NewUserMuxAdapter(muxService UserMuxServices, m *mux.Router) {
 		resume:  muxService.Resume,
 		project: muxService.Project,
 		auth:    muxService.Auth,
+		secret:  muxService.Secret,
 	}
 
 	//user service
@@ -96,6 +100,24 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		Code:   200,
 		Token:  token,
 	})
+
+	// write token to cookie using gorilla sessions
+	cookieStore := sessions.NewCookieStore(u.secret)
+	session, session_err := cookieStore.Get(r, "auth-token")
+
+	if nil != session_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: session_err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	session.Values["token"] = token
+
+	session.Save(r, w)
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
@@ -327,7 +349,14 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
-	token := r.Header.Get("Authorization")
+	// token := r.Header.Get("Authorization")
+	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
+
+	if nil != session_err {
+		return false
+	}
+
+	token := session.Values["token"].(string)
 
 	// check if user is authorized
 	authorized := u.auth.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)

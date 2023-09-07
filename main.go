@@ -157,13 +157,14 @@ func main() {
 
 	authRivia := stores.NewRivia(redis_store, authDB)
 	authRedisAdapter := out_adapter.NewAuthRedisAdapter(authRivia)
-	userSessionService := service.NewSessionAuthService(authRedisAdapter, jSecret)
+	userSessionService := service.NewSessionAuthService(authRedisAdapter)
 	userMuxServices := in_adapter.UserMuxServices{
 		User:    userService,
 		Resume:  userResumeService,
 		Project: userProjectService,
 		Login:   userLoginService,
 		Auth:    userSessionService,
+		Secret:  jSecret,
 	}
 
 	in_adapter.NewUserMuxAdapter(userMuxServices, userRouter)

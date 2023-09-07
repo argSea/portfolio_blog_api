@@ -22,14 +22,12 @@ func (s sessionAuthData) MarshalBinary() (data []byte, err error) {
 }
 
 type sessionAuthService struct {
-	repo   out_port.AuthRepo
-	secret []byte
+	repo out_port.AuthRepo
 }
 
-func NewSessionAuthService(repo out_port.AuthRepo, secret []byte) in_port.AuthService {
+func NewSessionAuthService(repo out_port.AuthRepo) in_port.AuthService {
 	return sessionAuthService{
-		repo:   repo,
-		secret: secret,
+		repo: repo,
 	}
 }
 
@@ -59,6 +57,7 @@ func (s sessionAuthService) Generate(id string) (string, error) {
 func (s sessionAuthService) Validate(token string) (data_objects.AuthValidationResponseObject, error) {
 	// get token from redis
 	data := s.repo.Get(token)
+	print(data)
 
 	// check if token exists
 	if "" == data {
