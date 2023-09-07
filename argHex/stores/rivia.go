@@ -26,7 +26,7 @@ func (r *Rivia) Get(id string) string {
 	data := r.redis.client.Get(r.ctx, id)
 	log.Println(data)
 
-	return data.String()
+	return data.Val()
 }
 
 func (r *Rivia) Set(id string, expires time.Duration, data interface{}) error {
