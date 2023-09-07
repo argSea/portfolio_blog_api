@@ -2,6 +2,7 @@ package in_adapter
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -110,6 +111,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["token"] = token
 	session.Save(r, w)
+	log.Println("Cookie set: ", session)
 
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
 		Status: "ok",
