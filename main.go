@@ -186,7 +186,7 @@ func main() {
 func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Acess-Control-Allow-Credentials", "true")
-		w.Header().Add("Access-Control-Allow-Origin", "http://127.0.0.1")
+		w.Header().Add("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
 		w.Header().Add("Access-Control-Allow-Headers", "*")
 		w.Header().Add("Content-Type", "application/json")
 
