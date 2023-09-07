@@ -95,12 +95,6 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
-		Status: "ok",
-		Code:   200,
-		Token:  token,
-	})
-
 	// write token to http only cookie
 	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
 
@@ -116,6 +110,12 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["token"] = token
 	session.Save(r, w)
+
+	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
+		Status: "ok",
+		Code:   200,
+		Token:  token,
+	})
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
