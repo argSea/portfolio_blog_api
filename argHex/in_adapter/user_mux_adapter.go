@@ -394,6 +394,8 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 		Path:     "/",
 		MaxAge:   expires.Second(),
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	}
 
 	if nil != session_err {
