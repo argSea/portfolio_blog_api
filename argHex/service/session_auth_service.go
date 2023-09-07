@@ -65,9 +65,14 @@ func (s sessionAuthService) Validate(token string) (data_objects.AuthValidationR
 		return data_objects.AuthValidationResponseObject{}, nil
 	}
 
+	log.Println("Data exists!")
+
 	// unmarshal data
 	var authData sessionAuthData
 	json_err := json.Unmarshal([]byte(data), &authData)
+
+	log.Println(authData)
+	log.Println(json_err)
 
 	if nil != json_err {
 		return data_objects.AuthValidationResponseObject{}, json_err
@@ -75,6 +80,7 @@ func (s sessionAuthService) Validate(token string) (data_objects.AuthValidationR
 
 	// check if token is expired
 	if time.Now().After(authData.Expires) {
+		log.Println("Token expired! " + authData.Expires.String())
 		return data_objects.AuthValidationResponseObject{}, nil
 	}
 
@@ -91,12 +97,15 @@ func (s sessionAuthService) IsAuthorized(id string, token string, roles ...strin
 	// check if token is valid
 	authData, err := s.Validate(token)
 
+	log.Println(authData)
+
 	if nil != err {
 		return false
 	}
 
 	// check if user id matches
 	if id != authData.UserID {
+		log.Println("User id does not match! " + id + " " + authData.UserID)
 		return false
 	}
 
@@ -106,6 +115,8 @@ func (s sessionAuthService) IsAuthorized(id string, token string, roles ...strin
 			return true
 		}
 	}
+
+	log.Println("User does not have required role! " + authData.Role + " " + roles[0])
 
 	return false
 }
