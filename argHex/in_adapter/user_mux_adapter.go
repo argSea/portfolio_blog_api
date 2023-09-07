@@ -66,6 +66,8 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			// set code 500
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -81,6 +83,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 			Code:    400,
 			Message: err.Error(),
 		}
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -93,10 +96,12 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 			Code:    500,
 			Message: token_error.Error(),
 		}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
 		Status: "ok",
 		Code:   200,
@@ -112,6 +117,7 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -125,6 +131,7 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 			Code:    401,
 			Message: "Unauthorized",
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(response)
 
 		return
@@ -142,12 +149,15 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 			Code:    400,
 			Message: err.Error(),
 		}
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		resp = data_objects.NewUserResponseObject{
 			Status: "ok",
 			Code:   200,
 			UserID: new_id,
 		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 
 	json.NewEncoder(w).Encode(resp)
@@ -186,6 +196,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -205,6 +216,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 			Code:    401,
 			Message: "Unauthorized",
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(response)
 
 		return
@@ -219,6 +231,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 			Code:    500,
 			Message: pass_err.Error(),
 		}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 
 		return
@@ -236,11 +249,13 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 			Code:    400,
 			Message: updated_err.Error(),
 		}
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		resp = data_objects.ItemLessResponseObject{
 			Status: "ok",
 			Code:   200,
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 
 	json.NewEncoder(w).Encode(resp)
@@ -254,6 +269,7 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -272,6 +288,7 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 			Code:    401,
 			Message: "Unauthorized",
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(response)
 
 		return
@@ -287,11 +304,13 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 			Code:    400,
 			Message: deleted_err,
 		}
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		resp = data_objects.ItemLessResponseObject{
 			Status: "ok",
 			Code:   200,
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 
 	json.NewEncoder(w).Encode(resp)
@@ -307,6 +326,7 @@ func (u userMuxAdapter) GetResumes(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -324,12 +344,11 @@ func (u userMuxAdapter) GetResumes(w http.ResponseWriter, r *http.Request) {
 		response.Resumes = append(response.Resumes, user_resumes[i])
 	}
 
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }
 
 func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Add("Content-Type", "application/json")
-
 	defer func() {
 		if err := recover(); err != nil {
 			response := data_objects.ErroredResponseObject{
@@ -337,6 +356,7 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 				Code:    500,
 				Message: err,
 			}
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
@@ -353,6 +373,8 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(user_projects); i++ {
 		response.Projects = append(response.Projects, user_projects[i])
 	}
+
+	w.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(w).Encode(response)
 }
