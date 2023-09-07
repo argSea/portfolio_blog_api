@@ -103,9 +103,11 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
-		Status: "ok",
-		Code:   200,
-		Token:  token,
+		Status:   "ok",
+		Code:     200,
+		UserName: user.UserName,
+		UserID:   user.Id,
+		Token:    token,
 	})
 }
 

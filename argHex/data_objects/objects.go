@@ -49,9 +49,11 @@ type UserResponseObject struct {
 }
 
 type LoginResponseObject struct {
-	Status string `json:"status"`
-	Code   int64  `json:"code"`
-	Token  string `json:"token"`
+	Status   string `json:"status"`
+	Code     int64  `json:"code"`
+	UserName string `json:"userName"`
+	UserID   string `json:"userID"`
+	Token    string `json:"token"`
 }
 
 type NewUserResponseObject struct {
