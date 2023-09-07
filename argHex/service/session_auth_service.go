@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -54,7 +55,7 @@ func (s sessionAuthService) Generate(id string, expires time.Time, roles []strin
 func (s sessionAuthService) Validate(token string) (data_objects.AuthValidationResponseObject, error) {
 	// get token from redis
 	data := s.repo.Get(token)
-	print(data)
+	log.Println(data)
 
 	// check if token exists
 	if "" == data {
