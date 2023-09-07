@@ -368,7 +368,7 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 
 	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
 	session.Options = &sessions.Options{
-		Domain:   "argsea.com",
+		// Domain:   "argsea.com",
 		Path:     "/",
 		MaxAge:   expires.Second(),
 		HttpOnly: true,
