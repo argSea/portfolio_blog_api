@@ -3,6 +3,7 @@ package stores
 // import redis
 import (
 	"context"
+	"log"
 	"time"
 )
 
@@ -23,6 +24,7 @@ func NewRivia(redis *Redis, db int) *Rivia {
 
 func (r *Rivia) Get(id string) string {
 	data := r.redis.client.Get(r.ctx, id)
+	log.Println(data)
 
 	return data.String()
 }
