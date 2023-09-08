@@ -19,11 +19,18 @@ func NewRedisStore(redis_host string, redis_port string, redis_user string, redi
 
 	defer cancel()
 
+	//
+
 	redisDB.client = redis.NewClient(&redis.Options{
-		Addr:     redis_host + ":" + redis_port,
-		Username: redis_user,
-		Password: redis_pass,
-		DB:       redis_db,
+		Addr:         redis_host + ":" + redis_port,
+		Username:     redis_user,
+		Password:     redis_pass,
+		DB:           redis_db,
+		PoolSize:     100,
+		PoolTimeout:  time.Second * 10,
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
+		MaxIdleConns: 10,
 	})
 
 	redisDB.ctx = ctx
