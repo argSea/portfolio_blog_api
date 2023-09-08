@@ -226,7 +226,7 @@ func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 }
 
 func (a authMuxAdapter) getUserDetails(userID string) domain.User {
-	user_call := "/1/user/" + userID + "/"
+	user_call := "https://api.argsea.com/1/user/" + userID + "/"
 	user_resp, user_err := http.Get(user_call)
 
 	if nil != user_err {
