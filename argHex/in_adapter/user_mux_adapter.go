@@ -407,22 +407,22 @@ func (u userMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *h
 	}
 
 	// set user details session as well
-	user_session, user_session_err := sessions.NewCookieStore(u.secret).Get(r, "user-details")
-	user_session.Options = sess_options
+	// user_session, user_session_err := sessions.NewCookieStore(u.secret).Get(r, "user-details")
+	// user_session.Options = sess_options
 
-	if nil != user_session_err {
-		return "", user_session_err
-	}
+	// if nil != user_session_err {
+	// 	return "", user_session_err
+	// }
 
 	session.Values["token"] = token
 	session.Values["iat"] = time.Now().Unix()
 	session.Save(r, w)
 	log.Println("Cookie set: ", session)
 
-	user_session.Values["user_id"] = user.Id
-	user_session.Values["user_name"] = user.UserName
-	user_session.Save(r, w)
-	log.Println("Cookie set: ", user_session)
+	// user_session.Values["user_id"] = user.Id
+	// user_session.Values["user_name"] = user.UserName
+	// user_session.Save(r, w)
+	// log.Println("Cookie set: ", user_session)
 
 	return token, nil
 }
