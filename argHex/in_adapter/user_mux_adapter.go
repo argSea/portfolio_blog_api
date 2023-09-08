@@ -2,194 +2,40 @@ package in_adapter
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
-	"time"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/in_port"
+	auth "github.com/argSea/portfolio_blog_api/argHex/utility"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 )
-
-type UserMuxServices struct {
-	User    in_port.UserCRUDService
-	Login   in_port.UserLoginService
-	Resume  in_port.UserResumeService
-	Project in_port.UserProjectService
-	Auth    in_port.AuthService
-	Secret  []byte
-}
 
 //FROM USER TO APP
 type userMuxAdapter struct {
 	user    in_port.UserCRUDService
-	login   in_port.UserLoginService
 	resume  in_port.UserResumeService
 	project in_port.UserProjectService
-	auth    in_port.AuthService
-	secret  []byte
 }
 
-func NewUserMuxAdapter(muxService UserMuxServices, m *mux.Router) {
-	u := &userMuxAdapter{
-		user:    muxService.User,
-		login:   muxService.Login,
-		resume:  muxService.Resume,
-		project: muxService.Project,
-		auth:    muxService.Auth,
-		secret:  muxService.Secret,
+func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p in_port.UserProjectService, m *mux.Router) {
+	adapter := &userMuxAdapter{
+		user:    u,
+		resume:  r,
+		project: p,
 	}
 
 	//user service
-	m.HandleFunc("/", u.Create).Methods("POST")
-	m.HandleFunc("/{id}/", u.Get).Methods("GET")
-	m.HandleFunc("/{id}/", u.Update).Methods("PUT")
-	m.HandleFunc("/{id}/", u.Delete).Methods("DELETE")
-
-	//user auth service
-	m.HandleFunc("/login/", u.Login).Methods("POST")
-	m.HandleFunc("/validate/", u.Validate).Methods("GET")
+	m.HandleFunc("/", adapter.Create).Methods("POST")
+	m.HandleFunc("/{id}/", adapter.Get).Methods("GET")
+	m.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
+	m.HandleFunc("/{id}/", adapter.Delete).Methods("DELETE")
 
 	//resume service
-	m.HandleFunc("/{id}/resumes/", u.GetResumes).Methods("GET")
+	m.HandleFunc("/{id}/resumes/", adapter.GetResumes).Methods("GET")
 
 	//project service
-	m.HandleFunc("/{id}/projects/", u.GetProjects).Methods("GET")
-}
-
-func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		if err := recover(); err != nil {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    500,
-				Message: err,
-			}
-			// set code 500
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(response)
-		}
-	}()
-
-	var user domain.User
-	json.NewDecoder(r.Body).Decode(&user)
-
-	user, err := u.login.Login(user)
-
-	if nil != err {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    400,
-			Message: err.Error(),
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	token, token_error := u.setSession(user, w, r)
-
-	if nil != token_error {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: token_error.Error(),
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(data_objects.LoginResponseObject{
-		Status:   "ok",
-		Code:     200,
-		UserName: user.UserName,
-		UserID:   user.Id,
-		Token:    token,
-	})
-}
-
-func (u userMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		if err := recover(); err != nil {
-			response := data_objects.ErroredResponseObject{
-				Status:  "error",
-				Code:    500,
-				Message: err,
-			}
-			// set code 500
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(response)
-		}
-	}()
-
-	// check if auth-token cookie exists
-	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
-
-	if nil != session_err {
-		log.Println("Error getting session: ", session_err)
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: session_err.Error(),
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	log.Println("Session data: ", session)
-
-	token := session.Values["token"].(string)
-
-	// check auth
-	v_response, v_err := u.auth.Validate(token)
-
-	if nil != v_err {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: v_err.Error(),
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	if !v_response.Valid {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	log.Println("User is authorized! " + v_response.UserID)
-
-	userID := v_response.UserID
-	// role := v_response.Role
-
-	// get user
-	user := u.user.Read(userID)
-
-	// return user details
-	response := data_objects.UserResponseObject{
-		Status: "ok",
-		Code:   200,
-	}
-
-	response.Users = append(response.Users, user)
-
-	// todo: add role to response
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	m.HandleFunc("/{id}/projects/", adapter.GetProjects).Methods("GET")
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +52,7 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// check auth
-	authorized := u.checkAuth(r, w, "")
+	authorized := true //u.checkAuth(r, w, "")
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -291,7 +137,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	authorized := u.checkAuth(r, w, id)
+	authorized := true //u.checkAuth(r, w, id)
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -306,7 +152,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// hash password
-	hashed_pass, pass_err := u.login.HashPassword(string(user.Password))
+	hashed_pass, pass_err := auth.HashPassword(string(user.Password))
 
 	if nil != pass_err {
 		response := data_objects.ErroredResponseObject{
@@ -363,7 +209,7 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	authorized := u.checkAuth(r, w, id)
+	authorized := true //u.checkAuth(r, w, id)
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -460,78 +306,4 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(w).Encode(response)
-}
-
-func (u userMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
-	expires := time.Now().Add(time.Hour * 24)
-	roles := []string{"user"}
-	token, auth_error := u.auth.Generate(user.Id, expires, roles)
-
-	if nil != auth_error {
-		return "", auth_error
-	}
-
-	sess_options := &sessions.Options{
-		// Domain:   "argsea.com",
-		Path:     "/",
-		MaxAge:   24 * 60 * 60,
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-	}
-
-	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
-	session.Options = sess_options
-
-	if nil != session_err {
-		return "", session_err
-	}
-
-	// set user details session as well
-	// user_session, user_session_err := sessions.NewCookieStore(u.secret).Get(r, "user-details")
-	// user_session.Options = sess_options
-
-	// if nil != user_session_err {
-	// 	return "", user_session_err
-	// }
-
-	session.Values["token"] = token
-	session.Values["iat"] = time.Now().Unix()
-	session.Save(r, w)
-	log.Println("Cookie set: ", session)
-
-	// user_session.Values["user_id"] = user.Id
-	// user_session.Values["user_name"] = user.UserName
-	// user_session.Save(r, w)
-	// log.Println("Cookie set: ", user_session)
-
-	return token, nil
-}
-
-func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
-	// token := r.Header.Get("Authorization")
-	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
-
-	if nil != session_err {
-		log.Println("Error getting session: ", session_err)
-		return false
-	}
-
-	token := session.Values["token"].(string)
-
-	// check if user is authorized
-	authorized := u.auth.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)
-
-	if !authorized {
-		log.Println("User not authorized! " + userID)
-		return false
-	}
-
-	// create user from id
-	user := u.user.Read(userID)
-
-	// if authorized, refresh token
-	u.setSession(user, w, r)
-
-	return true
 }

@@ -52,14 +52,3 @@ func (u userLoginService) Signup(user domain.User) (string, error) {
 
 	return user_id, err
 }
-
-func (u userLoginService) HashPassword(password string) (string, error) {
-	bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-
-	if nil != err {
-		log.Printf("Error hashing password: %v", err)
-		return "", err
-	}
-
-	return string(bcryptPassword), nil
-}

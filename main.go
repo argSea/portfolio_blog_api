@@ -127,6 +127,7 @@ func main() {
 	userRouter := router.PathPrefix("/1/user/").Subrouter()
 	projRouter := router.PathPrefix("/1/project/").Subrouter()
 	resumeRouter := router.PathPrefix("/1/resume/").Subrouter()
+	authRouter := router.PathPrefix("/1/auth/").Subrouter()
 
 	//resume
 	log.Println("Initializing resume")
@@ -152,22 +153,16 @@ func main() {
 	userService := service.NewUserCRUDService(userMongoAdapter)
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
-	userLoginService := service.NewUserLoginService(userMongoAdapter)
-	// userJWTService := service.NewJWTAuthService(jSecret)
+	in_adapter.NewUserMuxAdapter(userService, userResumeService, userProjectService, userRouter)
 
+	//Auth
+	log.Println("Initializing auth")
 	authRivia := stores.NewRivia(redis_store, authDB)
 	authRedisAdapter := out_adapter.NewAuthRedisAdapter(authRivia)
-	userSessionService := service.NewSessionAuthService(authRedisAdapter)
-	userMuxServices := in_adapter.UserMuxServices{
-		User:    userService,
-		Resume:  userResumeService,
-		Project: userProjectService,
-		Login:   userLoginService,
-		Auth:    userSessionService,
-		Secret:  jSecret,
-	}
-
-	in_adapter.NewUserMuxAdapter(userMuxServices, userRouter)
+	userAuthService := service.NewSessionAuthService(authRedisAdapter)
+	userLoginService := service.NewUserLoginService(userMongoAdapter)
+	// userJWTService := service.NewJWTAuthService(jSecret)
+	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
