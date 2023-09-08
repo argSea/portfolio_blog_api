@@ -254,5 +254,7 @@ func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 		return domain.User{}
 	}
 
+	log.Println("User details: ", userReponse.Users[0])
+
 	return userReponse.Users[0].(domain.User)
 }
