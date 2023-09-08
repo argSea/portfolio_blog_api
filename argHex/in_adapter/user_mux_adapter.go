@@ -141,6 +141,8 @@ func (u userMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println(session)
+
 	token := session.Values["token"].(string)
 
 	// check auth
@@ -167,6 +169,8 @@ func (u userMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	log.Println("User is authorized! " + v_response.UserID)
 
 	userID := v_response.UserID
 	// role := v_response.Role
