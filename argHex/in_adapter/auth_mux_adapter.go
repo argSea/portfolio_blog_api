@@ -1,8 +1,8 @@
 package in_adapter
 
 import (
-	"context"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -227,28 +227,32 @@ func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 }
 
 func (a authMuxAdapter) getUserDetails(userID string) domain.User {
-	user_call := "https://api.argsea.com/1/user/" + userID + "/"
-	user_get, user_err := http.NewRequest("GET", user_call, nil)
-	user_get.Header.Set("Content-Type", "application/json")
-	user_get.Header.Set("Accept", "application/json")
+	user_endpoint := "https://api.argsea.com/1/user/" + userID + "/"
+	user_client := &http.Client{Timeout: time.Second * 10, Transport: &http.Transport{}}
 
-	user_ctx, user_cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer user_cancel()
+	user_res, user_res_err := user_client.Get(user_endpoint)
 
-	user_resp, user_err := http.DefaultClient.Do(user_get.WithContext(user_ctx))
-
-	if nil != user_err {
-		log.Println("Error getting user: ", user_err)
+	if nil != user_res_err {
+		log.Println("Error getting user: ", user_res_err)
 		return domain.User{}
 	}
 
-	log.Println("User response: ", user_resp.Body)
+	user_body, user_body_err := ioutil.ReadAll(user_res.Body)
+
+	if nil != user_body_err {
+		log.Println("Error getting user: ", user_body_err)
+		return domain.User{}
+	}
+
+	user_res.Body.Close()
+
+	log.Println("User response: ", user_body)
 
 	var user_response data_objects.UserResponseObject
-	json.NewDecoder(user_resp.Body).Decode(&user_response)
+	json_err := json.Unmarshal(user_body, &user_response)
 
-	if 0 == len(user_response.Users) {
-		log.Println("User not found! " + userID)
+	if nil != json_err {
+		log.Println("Error getting user: ", json_err)
 		return domain.User{}
 	}
 
