@@ -228,35 +228,23 @@ func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 
 func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 	user_endpoint := "https://api.argsea.com/1/user/" + userID + "/"
-	user_client := &http.Client{Timeout: time.Second * 10, Transport: &http.Transport{}}
+	res, err := http.Get(user_endpoint)
 
-	user_res, user_res_err := user_client.Get(user_endpoint)
-
-	if nil != user_res_err {
-		log.Println("Error getting user: ", user_res_err)
+	if nil != err {
+		log.Println("Error getting user: ", err)
 		return domain.User{}
 	}
 
-	user_body, user_body_err := ioutil.ReadAll(user_res.Body)
+	defer res.Body.Close()
 
-	if nil != user_body_err {
-		log.Println("Error getting user: ", user_body_err)
+	body, body_err := ioutil.ReadAll(res.Body)
+
+	if nil != body_err {
+		log.Println("Error reading body: ", body_err)
 		return domain.User{}
 	}
 
-	user_res.Body.Close()
+	log.Println("User details: ", string(body))
 
-	log.Println("User response: ", user_body)
-
-	var user_response data_objects.UserResponseObject
-	json_err := json.Unmarshal(user_body, &user_response)
-
-	if nil != json_err {
-		log.Println("Error getting user: ", json_err)
-		return domain.User{}
-	}
-
-	user := user_response.Users[0].(domain.User)
-
-	return user
+	return domain.User{}
 }
