@@ -141,7 +141,7 @@ func (u userMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(session)
+	log.Println("Session data: ", session)
 
 	token := session.Values["token"].(string)
 
