@@ -50,6 +50,7 @@ func NewUserMuxAdapter(muxService UserMuxServices, m *mux.Router) {
 
 	//user auth service
 	m.HandleFunc("/login/", u.Login).Methods("POST")
+	m.HandleFunc("/validate/", u.Validate).Methods("GET")
 
 	//resume service
 	m.HandleFunc("/{id}/resumes/", u.GetResumes).Methods("GET")
@@ -109,6 +110,82 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		UserID:   user.Id,
 		Token:    token,
 	})
+}
+
+func (u userMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			// set code 500
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	// check if auth-token cookie exists
+	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
+
+	if nil != session_err {
+		log.Println("Error getting session: ", session_err)
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: session_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	token := session.Values["token"].(string)
+
+	// check auth
+	v_response, v_err := u.auth.Validate(token)
+
+	if nil != v_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: v_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	if !v_response.Valid {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	userID := v_response.UserID
+	// role := v_response.Role
+
+	// get user
+	user := u.user.Read(userID)
+
+	// return user details
+	response := data_objects.UserResponseObject{
+		Status: "ok",
+		Code:   200,
+	}
+
+	response.Users = append(response.Users, user)
+
+	// todo: add role to response
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
