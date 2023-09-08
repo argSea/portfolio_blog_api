@@ -88,7 +88,7 @@ func (u userMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, token_error := u.setSession(user.Id, w, r)
+	token, token_error := u.setSession(user, w, r)
 
 	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
@@ -381,17 +381,16 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *http.Request) (string, error) {
+func (u userMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
 	expires := time.Now().Add(time.Hour * 24)
 	roles := []string{"user"}
-	token, auth_error := u.auth.Generate(user_id, expires, roles)
+	token, auth_error := u.auth.Generate(user.Id, expires, roles)
 
 	if nil != auth_error {
 		return "", auth_error
 	}
 
-	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
-	session.Options = &sessions.Options{
+	sess_options := &sessions.Options{
 		// Domain:   "argsea.com",
 		Path:     "/",
 		MaxAge:   24 * 60 * 60,
@@ -400,17 +399,30 @@ func (u userMuxAdapter) setSession(user_id string, w http.ResponseWriter, r *htt
 		Secure:   true,
 	}
 
+	session, session_err := sessions.NewCookieStore(u.secret).Get(r, "auth-token")
+	session.Options = sess_options
+
 	if nil != session_err {
 		return "", session_err
 	}
 
+	// set user details session as well
+	user_session, user_session_err := sessions.NewCookieStore(u.secret).Get(r, "user-details")
+	user_session.Options = sess_options
+
+	if nil != user_session_err {
+		return "", user_session_err
+	}
+
 	session.Values["token"] = token
 	session.Values["iat"] = time.Now().Unix()
-	// session.Values["exp"] = expires
-	// session.Values["roles"] = roles
-
 	session.Save(r, w)
 	log.Println("Cookie set: ", session)
+
+	user_session.Values["user_id"] = user.Id
+	user_session.Values["user_name"] = user.UserName
+	user_session.Save(r, w)
+	log.Println("Cookie set: ", user_session)
 
 	return token, nil
 }
@@ -434,8 +446,11 @@ func (u userMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 		return false
 	}
 
+	// create user from id
+	user := u.user.Read(userID)
+
 	// if authorized, refresh token
-	u.setSession(userID, w, r)
+	u.setSession(user, w, r)
 
 	return true
 }
