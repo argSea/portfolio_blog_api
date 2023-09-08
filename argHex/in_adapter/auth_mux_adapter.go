@@ -151,6 +151,7 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 
 	// get user
 	user := a.getUserDetails(userID)
+	log.Println("User details: ", user)
 
 	// return user details
 	response := data_objects.UserResponseObject{
