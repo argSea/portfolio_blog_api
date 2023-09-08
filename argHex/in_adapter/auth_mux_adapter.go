@@ -234,7 +234,7 @@ func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 		return domain.User{}
 	}
 
-	log.Println("User response: ", user_resp)
+	log.Println("User response: ", user_resp.Body)
 
 	var user_response data_objects.UserResponseObject
 	json.NewDecoder(user_resp.Body).Decode(&user_response)
