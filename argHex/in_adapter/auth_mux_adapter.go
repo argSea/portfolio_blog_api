@@ -1,6 +1,7 @@
 package in_adapter
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -227,7 +228,14 @@ func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID
 
 func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 	user_call := "https://api.argsea.com/1/user/" + userID + "/"
-	user_resp, user_err := http.Get(user_call)
+	user_get, user_err := http.NewRequest("GET", user_call, nil)
+	user_get.Header.Set("Content-Type", "application/json")
+	user_get.Header.Set("Accept", "application/json")
+
+	user_ctx, user_cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer user_cancel()
+
+	user_resp, user_err := http.DefaultClient.Do(user_get.WithContext(user_ctx))
 
 	if nil != user_err {
 		log.Println("Error getting user: ", user_err)
