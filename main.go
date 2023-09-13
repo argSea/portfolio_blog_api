@@ -165,11 +165,15 @@ func main() {
 	// userJWTService := service.NewJWTAuthService(jSecret)
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
+	origins := handlers.AllowedOrigins([]string{"http://127.0.0.1:5173"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		Addr:         ":8181",
-		Handler:      handlers.CORS()(router),
+		Handler:      handlers.CORS(origins, methods, headers)(router),
 	}
 
 	err := srv.ListenAndServe()
