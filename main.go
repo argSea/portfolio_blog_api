@@ -186,6 +186,12 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Add("Content-Type", "application/json")
 
+		// options
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
