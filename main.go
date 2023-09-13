@@ -14,6 +14,7 @@ import (
 	"github.com/argSea/portfolio_blog_api/argHex/out_adapter"
 	"github.com/argSea/portfolio_blog_api/argHex/service"
 	"github.com/argSea/portfolio_blog_api/argHex/stores"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
@@ -168,7 +169,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		Addr:         ":8181",
-		Handler:      router,
+		Handler:      handlers.CORS()(router),
 	}
 
 	err := srv.ListenAndServe()
@@ -185,12 +186,6 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		w.Header().Add("Access-Control-Allow-Headers", "*")
 		w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Add("Content-Type", "application/json")
-
-		// options
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
