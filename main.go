@@ -183,6 +183,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		w.Header().Add("Access-Control-Allow-Credentials", "true")
 		w.Header().Add("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
 		w.Header().Add("Access-Control-Allow-Headers", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "*")
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Println(r.URL)
