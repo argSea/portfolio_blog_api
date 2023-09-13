@@ -151,22 +151,24 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// hash password
-	hashed_pass, pass_err := auth.HashPassword(string(user.Password))
+	if "" != user.Password {
+		// hash password
+		hashed_pass, pass_err := auth.HashPassword(string(user.Password))
 
-	if nil != pass_err {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: pass_err.Error(),
+		if nil != pass_err {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: pass_err.Error(),
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+
+			return
 		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(response)
 
-		return
+		user.Password = domain.Password(hashed_pass)
 	}
-
-	user.Password = domain.Password(hashed_pass)
 
 	updated_err := u.user.Update(user)
 
