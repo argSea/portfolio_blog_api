@@ -168,12 +168,13 @@ func main() {
 	origins := handlers.AllowedOrigins([]string{"http://127.0.0.1:5173"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	credential := handlers.AllowCredentials()
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		Addr:         ":8181",
-		Handler:      handlers.CORS(origins, methods, headers)(router),
+		Handler:      handlers.CORS(origins, methods, headers, credential)(router),
 	}
 
 	err := srv.ListenAndServe()
@@ -185,10 +186,6 @@ func main() {
 
 func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Credentials", "true")
-		w.Header().Add("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
-		w.Header().Add("Access-Control-Allow-Headers", "*")
-		w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Println(r.URL)
