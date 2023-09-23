@@ -138,7 +138,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	authorized, auth_err := u.checkAuth()
+	authorized, auth_err := u.checkAuth(r)
 
 	if nil != auth_err {
 		response := data_objects.ErroredResponseObject{
@@ -323,10 +323,27 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (u userMuxAdapter) checkAuth() (bool, error) {
+func (u userMuxAdapter) checkAuth(r *http.Request) (bool, error) {
 	// check auth
 	validate_endpoint := "https://api.argsea.com/auth/validate/"
-	val_res, val_err := http.Get(validate_endpoint)
+
+	// pass along all cookies
+	cookies := r.Cookies()
+	cookie_string := ""
+
+	for i := 0; i < len(cookies); i++ {
+		cookie_string += cookies[i].Name + "=" + cookies[i].Value + ";"
+	}
+
+	req, req_err := http.NewRequest("GET", validate_endpoint, nil)
+
+	if nil != req_err {
+		return false, req_err
+	}
+
+	req.Header.Add("Cookie", cookie_string)
+
+	val_res, val_err := http.DefaultClient.Do(req)
 
 	if nil != val_err {
 		return false, val_err
