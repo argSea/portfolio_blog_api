@@ -54,7 +54,19 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// check auth
-	authorized := true //u.checkAuth(r, w, "")
+	authorized, auth_err := u.checkAuth(r)
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
