@@ -2,6 +2,7 @@ package in_adapter
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -137,7 +138,19 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	authorized := true //u.checkAuth(r, w, id)
+	authorized, auth_err := u.checkAuth()
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -308,4 +321,31 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func (u userMuxAdapter) checkAuth() (bool, error) {
+	// check auth
+	validate_endpoint := "https://api.argsea.com/auth/validate/"
+	val_res, val_err := http.Get(validate_endpoint)
+
+	if nil != val_err {
+		return false, val_err
+	}
+
+	defer val_res.Body.Close()
+
+	val_body, val_body_err := ioutil.ReadAll(val_res.Body)
+
+	if nil != val_body_err {
+		return false, val_body_err
+	}
+
+	var val_data map[string]interface{}
+	json.Unmarshal(val_body, &val_data)
+
+	if "ok" != val_data["status"] {
+		return false, nil
+	}
+
+	return true, nil
 }

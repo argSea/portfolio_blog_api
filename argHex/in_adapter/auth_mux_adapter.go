@@ -200,32 +200,32 @@ func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *h
 	return token, nil
 }
 
-func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
-	// token := r.Header.Get("Authorization")
-	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+// func (a authMuxAdapter) checkAuth(r *http.Request, w http.ResponseWriter, userID string) bool {
+// 	// token := r.Header.Get("Authorization")
+// 	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
 
-	if nil != session_err {
-		log.Println("Error getting session: ", session_err)
-		return false
-	}
+// 	if nil != session_err {
+// 		log.Println("Error getting session: ", session_err)
+// 		return false
+// 	}
 
-	token := session.Values["token"].(string)
+// 	token := session.Values["token"].(string)
 
-	// check if user is authorized
-	authorized := a.authService.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)
+// 	// check if user is authorized
+// 	authorized := a.authService.IsAuthorized(userID, token, in_port.PERM_USER, in_port.PERM_ADMIN)
 
-	if !authorized {
-		log.Println("User not authorized! " + userID)
-		return false
-	}
+// 	if !authorized {
+// 		log.Println("User not authorized! " + userID)
+// 		return false
+// 	}
 
-	user := a.getUserDetails(userID)
+// 	user := a.getUserDetails(userID)
 
-	// if authorized, refresh token
-	a.setSession(user, w, r)
+// 	// if authorized, refresh token
+// 	a.setSession(user, w, r)
 
-	return true
-}
+// 	return true
+// }
 
 func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 	user_endpoint := "https://api.argsea.com/1/user/" + userID + "/"
