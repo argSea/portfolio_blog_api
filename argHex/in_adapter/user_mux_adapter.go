@@ -3,6 +3,7 @@ package in_adapter
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -334,6 +335,8 @@ func (u userMuxAdapter) checkAuth(r *http.Request) (bool, error) {
 	for i := 0; i < len(cookies); i++ {
 		cookie_string += cookies[i].Name + "=" + cookies[i].Value + ";"
 	}
+
+	log.Println(cookie_string)
 
 	req, req_err := http.NewRequest("GET", validate_endpoint, nil)
 
