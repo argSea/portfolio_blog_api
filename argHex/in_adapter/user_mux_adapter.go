@@ -213,11 +213,10 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 		if "data:" == contact.Icon[:5] {
 			// upload file
-			file_type := contact.Icon[5:strings.Index(contact.Icon, ";")]
-			file_data := contact.Icon[strings.Index(contact.Icon, ",")+1:]
+			mime_type := contact.Icon[5:strings.Index(contact.Icon, ";")]
+			encoded_data := contact.Icon[strings.Index(contact.Icon, ",")+1:]
 
-			// decode file data
-			decoded_data, decode_err := base64.StdEncoding.DecodeString(file_data)
+			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
 
 			if nil != decode_err {
 				response := data_objects.ErroredResponseObject{
@@ -231,8 +230,11 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			// get file type from mime type
+			file_type := mime_type[strings.Index(mime_type, "/")+1:]
+
 			// upload file
-			upload_path, upload_err := u.media.UploadMedia(file_type, decoded_data)
+			upload_res, upload_err := u.media.UploadMedia(file_type, decoded_data)
 
 			if nil != upload_err {
 				response := data_objects.ErroredResponseObject{
@@ -246,8 +248,9 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// set icon to uploaded file path
-			contact.Icon = upload_path
+			contact.Icon = upload_res
+
+			contacts[i] = contact
 		}
 	}
 
