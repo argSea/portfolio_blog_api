@@ -1,5 +1,5 @@
 package out_port
 
 type MediaRepo interface {
-	UploadMedia() (string, error)
+	UploadMedia(file_type string, bytes []byte) (string, error)
 }

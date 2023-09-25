@@ -270,5 +270,10 @@ func (a authMuxAdapter) getUserDetails(userID string) domain.User {
 	var final_user domain.User
 	json_err = json.Unmarshal(user_json, &final_user)
 
+	if nil != json_err {
+		log.Println("Error unmarshalling user: ", json_err)
+		return domain.User{}
+	}
+
 	return final_user
 }

@@ -16,6 +16,6 @@ func NewMediaService(mediaRepo out_port.MediaRepo) in_port.MediaService {
 	}
 }
 
-func (m mediaService) UploadMedia() (string, error) {
-	return "", nil
+func (m mediaService) UploadMedia(file_type string, bytes []byte) (string, error) {
+	return m.mediaRepo.UploadMedia(file_type, bytes)
 }

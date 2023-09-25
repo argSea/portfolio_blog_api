@@ -1,10 +1,12 @@
 package in_adapter
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
@@ -18,26 +20,28 @@ type userMuxAdapter struct {
 	user    in_port.UserCRUDService
 	resume  in_port.UserResumeService
 	project in_port.UserProjectService
+	media   in_port.MediaService
 }
 
-func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p in_port.UserProjectService, m *mux.Router) {
+func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p in_port.UserProjectService, m in_port.MediaService, router *mux.Router) {
 	adapter := &userMuxAdapter{
 		user:    u,
 		resume:  r,
 		project: p,
+		media:   m,
 	}
 
 	//user service
-	m.HandleFunc("/", adapter.Create).Methods("POST")
-	m.HandleFunc("/{id}/", adapter.Get).Methods("GET")
-	m.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
-	m.HandleFunc("/{id}/", adapter.Delete).Methods("DELETE")
+	router.HandleFunc("/", adapter.Create).Methods("POST")
+	router.HandleFunc("/{id}/", adapter.Get).Methods("GET")
+	router.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
+	router.HandleFunc("/{id}/", adapter.Delete).Methods("DELETE")
 
 	//resume service
-	m.HandleFunc("/{id}/resumes/", adapter.GetResumes).Methods("GET")
+	router.HandleFunc("/{id}/resumes/", adapter.GetResumes).Methods("GET")
 
 	//project service
-	m.HandleFunc("/{id}/projects/", adapter.GetProjects).Methods("GET")
+	router.HandleFunc("/{id}/projects/", adapter.GetProjects).Methods("GET")
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
@@ -194,6 +198,57 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		}
 
 		user.Password = domain.Password(hashed_pass)
+	}
+
+	// grab user Contacts data
+	contacts := user.Contacts
+
+	for i := 0; i < len(contacts); i++ {
+		contact := contacts[i]
+
+		// check if icon is file data or url
+		if "" == contact.Icon {
+			continue
+		}
+
+		if "data:" == contact.Icon[:5] {
+			// upload file
+			file_type := contact.Icon[5:strings.Index(contact.Icon, ";")]
+			file_data := contact.Icon[strings.Index(contact.Icon, ",")+1:]
+
+			// decode file data
+			decoded_data, decode_err := base64.StdEncoding.DecodeString(file_data)
+
+			if nil != decode_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: decode_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// upload file
+			upload_path, upload_err := u.media.UploadMedia(file_type, decoded_data)
+
+			if nil != upload_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: upload_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// set icon to uploaded file path
+			contact.Icon = upload_path
+		}
 	}
 
 	updated_err := u.user.Update(user)

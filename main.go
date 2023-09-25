@@ -124,6 +124,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	// media for users
+	save_path := viper.GetString("media.images.save_path")
+	web_path := viper.GetString("media.images.web_path")
+	mediaWebstoreAdapter := out_adapter.NewMediaWebstoreAdapter(save_path, web_path)
+
 	//user
 	userRouter := router.PathPrefix("/1/user/").Subrouter()
 	projRouter := router.PathPrefix("/1/project/").Subrouter()
@@ -154,7 +159,8 @@ func main() {
 	userService := service.NewUserCRUDService(userMongoAdapter)
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
-	in_adapter.NewUserMuxAdapter(userService, userResumeService, userProjectService, userRouter)
+	mediaService := service.NewMediaService(mediaWebstoreAdapter)
+	in_adapter.NewUserMuxAdapter(userService, userResumeService, userProjectService, mediaService, userRouter)
 
 	//Auth
 	log.Println("Initializing auth")
