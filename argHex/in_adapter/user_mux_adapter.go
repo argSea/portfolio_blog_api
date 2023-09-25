@@ -148,8 +148,37 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	var user domain.User
-	json.NewDecoder(r.Body).Decode(&user)
+	// check for json errors in r.body
+	body, body_err := ioutil.ReadAll(r.Body)
+
+	if nil != body_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: body_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	// check for empty body
+	if "" == string(body) {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    400,
+			Message: "Empty body",
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	// parse body into user
+	user := domain.User{}
+	json.Unmarshal(body, &user)
 
 	log.Println(user)
 
