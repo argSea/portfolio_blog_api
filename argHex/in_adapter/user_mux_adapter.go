@@ -180,7 +180,19 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 	// parse body into user
 	user := domain.User{}
-	json.Unmarshal(body, &user)
+	json_err := json.Unmarshal(body, &user)
+
+	if nil != json_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    400,
+			Message: json_err.Error(),
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
 
 	log.Println(user)
 
