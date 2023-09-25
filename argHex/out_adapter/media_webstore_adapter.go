@@ -33,7 +33,7 @@ func (m mediaWebstoreAdapter) UploadMedia(mime_type string, bytes []byte) (strin
 	save_path := m.save_path
 	web_path := m.web_path
 
-	file_name := string(b) + "." + file_type
+	file_name := string(b) + file_type
 
 	// open file handle
 	file, err := os.Create(save_path + file_name)
