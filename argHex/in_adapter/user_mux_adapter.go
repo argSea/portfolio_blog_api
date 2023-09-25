@@ -272,6 +272,10 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 			// get file type from mime type
 			file_type := mime_type[strings.Index(mime_type, "/")+1:]
+			// if jpeg, should be jpg
+			if "jpeg" == file_type {
+				file_type = "jpg"
+			}
 
 			// upload file
 			upload_res, upload_err := u.media.UploadMedia(file_type, decoded_data)

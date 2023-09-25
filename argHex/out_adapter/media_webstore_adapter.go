@@ -1,7 +1,7 @@
 package out_adapter
 
 import (
-	"crypto/rand"
+	"math/rand"
 	"os"
 
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
@@ -20,8 +20,13 @@ func NewMediaWebstoreAdapter(save_path string, web_path string) out_port.MediaRe
 }
 
 func (m mediaWebstoreAdapter) UploadMedia(file_type string, bytes []byte) (string, error) {
-	// generate random string
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, 16)
+
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+
 	save_path := m.save_path
 	web_path := m.web_path
 
