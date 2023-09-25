@@ -176,6 +176,8 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println(string(body))
+
 	// parse body into user
 	user := domain.User{}
 	json.Unmarshal(body, &user)
