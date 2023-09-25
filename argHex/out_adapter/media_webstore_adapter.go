@@ -30,12 +30,6 @@ func (m mediaWebstoreAdapter) UploadMedia(file_type string, bytes []byte) (strin
 	save_path := m.save_path
 	web_path := m.web_path
 
-	_, err := rand.Read(b)
-
-	if err != nil {
-		return "", err
-	}
-
 	file_name := string(b) + "." + file_type
 
 	// open file handle
