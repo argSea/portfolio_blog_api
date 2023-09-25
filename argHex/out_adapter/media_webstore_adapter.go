@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
+	"github.com/argSea/portfolio_blog_api/argHex/utility"
 )
 
 type mediaWebstoreAdapter struct {
@@ -19,7 +20,9 @@ func NewMediaWebstoreAdapter(save_path string, web_path string) out_port.MediaRe
 	}
 }
 
-func (m mediaWebstoreAdapter) UploadMedia(file_type string, bytes []byte) (string, error) {
+func (m mediaWebstoreAdapter) UploadMedia(mime_type string, bytes []byte) (string, error) {
+	file_type := utility.MimeToFileExt(mime_type)
+
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, 16)
 
