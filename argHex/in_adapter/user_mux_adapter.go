@@ -151,6 +151,8 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
 	json.NewDecoder(r.Body).Decode(&user)
 
+	log.Println(user)
+
 	id := mux.Vars(r)["id"]
 	user.Id = id
 
@@ -200,21 +202,16 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		user.Password = domain.Password(hashed_pass)
 	}
 
-	// grab user Contacts data
-	contacts := user.Contacts
-
-	for i := 0; i < len(contacts); i++ {
-		contact := contacts[i]
-
+	for i := 0; i < len(user.Contacts); i++ {
 		// check if icon is file data or url
-		if "" == contact.Icon {
+		if "" == user.Contacts[i].Icon {
 			continue
 		}
 
-		if "data:" == contact.Icon[:5] {
+		if "data:" == user.Contacts[i].Icon[:5] {
 			// upload file
-			mime_type := contact.Icon[5:strings.Index(contact.Icon, ";")]
-			encoded_data := contact.Icon[strings.Index(contact.Icon, ",")+1:]
+			mime_type := user.Contacts[i].Icon[5:strings.Index(user.Contacts[i].Icon, ";")]
+			encoded_data := user.Contacts[i].Icon[strings.Index(user.Contacts[i].Icon, ",")+1:]
 
 			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
 
@@ -248,9 +245,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			contact.Icon = upload_res
-
-			contacts[i] = contact
+			user.Contacts[i].Icon = upload_res
 		}
 	}
 
