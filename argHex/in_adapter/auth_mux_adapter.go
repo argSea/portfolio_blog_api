@@ -117,6 +117,17 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Session data: ", session)
 
+	if session.IsNew {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	token := session.Values["token"].(string)
 
 	// check auth
