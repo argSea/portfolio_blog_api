@@ -24,6 +24,7 @@ type Project struct {
 	Priority          int         `json:"priority" bson:"priority,omitempty"`
 	IsActive          bool        `json:"isActive" bson:"isActive,omitempty"`
 	IsReleased        bool        `json:"isReleased" bson:"isReleased,omitempty"`
+	IsHidden          bool        `json:"isHidden" bson:"isHidden,omitempty"`
 	BookID            *string     `json:"bookID" bson:"bookID,omitempty"`
 	RelatedCourse     *Course     `json:"relatedCourse" bson:"relatedCourse,omitempty"`
 	RelatedExperience *Experience `json:"relatedExperience" bson:"relatedExperience,omitempty"`
