@@ -175,13 +175,14 @@ func main() {
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range", "range"})
+	exposedHeaders := handlers.ExposedHeaders([]string{"Content-Range"})
 	credential := handlers.AllowCredentials()
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		Addr:         ":8181",
-		Handler:      handlers.CORS(origins, methods, headers, credential)(router),
+		Handler:      handlers.CORS(origins, methods, headers, exposedHeaders, credential)(router),
 	}
 
 	err := srv.ListenAndServe()
