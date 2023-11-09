@@ -5,7 +5,7 @@ type Users []User
 //Entity // domain
 type User struct {
 	//Model
-	Id            string        `json:"userID" bson:"_id,omitempty"`
+	Id            string        `json:"id" bson:"_id,omitempty"`
 	UserName      string        `json:"userName" bson:"userName,omitempty"`
 	Password      Password      `json:"password" bson:"password,omitempty"`
 	FirstName     string        `json:"firstName" bson:"firstName,omitempty"`
