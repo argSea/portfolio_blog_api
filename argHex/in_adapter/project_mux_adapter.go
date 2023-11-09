@@ -20,9 +20,9 @@ func NewProjectMuxAdapter(proj in_port.ProjectCRUDService, m *mux.Router) *proje
 	}
 
 	m.HandleFunc("/", p.Create).Methods("POST")
-	m.HandleFunc("/{id}/", p.Get).Methods("GET")
-	m.HandleFunc("/{id}/", p.Update).Methods("PUT")
-	m.HandleFunc("/{id}/", p.Delete).Methods("DELETE")
+	m.HandleFunc("/{id}\\/?", p.Get).Methods("GET")
+	m.HandleFunc("/{id}\\/?", p.Update).Methods("PUT")
+	m.HandleFunc("/{id}\\/?", p.Delete).Methods("DELETE")
 
 	return &p
 }
