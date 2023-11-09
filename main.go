@@ -85,7 +85,7 @@ func main() {
 	//mux
 	router := mux.NewRouter()
 	router.Use(baseMiddleWare)
-	// router.StrictSlash(true)
+	router.StrictSlash(true)
 
 	//Cache credentials
 	mHost := viper.GetString("mongo.host") + ":" + viper.GetString("mongo.port")
