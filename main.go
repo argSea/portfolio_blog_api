@@ -171,7 +171,7 @@ func main() {
 	// userJWTService := service.NewJWTAuthService(jSecret)
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
-	origins := handlers.AllowedOrigins([]string{"*"})
+	origins := handlers.AllowedOrigins([]string{"http://127.0.0.1:5174", "http://127.0.0.1:5173"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	credential := handlers.AllowCredentials()
