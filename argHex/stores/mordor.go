@@ -93,6 +93,9 @@ func (m *Mordor) GetAll(limit int64, offset int64, sort interface{}, decoder int
 	findOpts.SetSort(sort)
 	cursor, err := m.collection.Find(m.ctx, bson.D{{}}, findOpts)
 
+	log.Printf("cursor: %+v\n", cursor)
+	log.Printf("err: %+v\n", err)
+
 	if nil != err {
 		return 0, err
 	}
