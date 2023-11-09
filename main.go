@@ -172,7 +172,7 @@ func main() {
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
 	// echo back origins
-	origins := handlers.AllowedOrigins([]string{"http://127.0.0.1:5173", "http://127.0.0.1:5174"})
+	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range"})
 	credential := handlers.AllowCredentials()
@@ -200,6 +200,12 @@ func main() {
 func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
+
+		// get origin header
+		origin := r.Header.Get("Origin")
+
+		// set allowed origins header to origin
+		w.Header().Set("Access-Control-Allow-Origin", origin)
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
