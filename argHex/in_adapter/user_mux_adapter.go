@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -32,6 +33,7 @@ func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p
 	}
 
 	//user service
+	router.HandleFunc("/", adapter.GetAll).Methods("GET")
 	router.HandleFunc("/", adapter.Create).Methods("POST")
 	router.HandleFunc("/{id}/", adapter.Get).Methods("GET")
 	router.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
@@ -42,6 +44,66 @@ func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p
 
 	//project service
 	router.HandleFunc("/{id}/projects/", adapter.GetProjects).Methods("GET")
+}
+
+func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	limit := int64(0)
+	offset := int64(0)
+	sort := ""
+
+	if nil != r.URL.Query()["limit"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["limit"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			limit = i
+		}
+	}
+
+	if nil != r.URL.Query()["offset"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["offset"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			offset = i
+		}
+	}
+
+	if nil != r.URL.Query()["sort"] {
+		sort = r.URL.Query()["sort"][0]
+	}
+
+	users := u.user.ReadAll(limit, offset, sort)
+
+	response := data_objects.UserResponseObject{
+		Status: "ok",
+		Code:   200,
+	}
+
+	for i := 0; i < len(users); i++ {
+		response.Users = append(response.Users, users[i])
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {

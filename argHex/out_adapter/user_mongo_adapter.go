@@ -21,6 +21,20 @@ func NewUserMongoAdapter(store *stores.Mordor) out_port.UserRepo {
 	return u
 }
 
+func (u userMongoAdapter) GetAll(limit int64, offset int64, sort interface{}) []domain.User {
+	users := []domain.User{}
+	count, err := u.store.GetAll(limit, offset, sort, &users)
+
+	if nil != err {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return []domain.User{}
+	}
+
+	fmt.Printf("count: %v\n", count)
+
+	return users
+}
+
 func (u userMongoAdapter) Get(id string) domain.User {
 	var user domain.User
 	err := u.store.Get("_id", id, &user)

@@ -4,6 +4,7 @@ import "github.com/argSea/portfolio_blog_api/argHex/domain"
 
 //User repo to connect to a store
 type UserRepo interface {
+	GetAll(limit int64, offset int64, sort interface{}) []domain.User
 	Get(id string) domain.User
 	GetByUserName(username string) domain.User
 	Set(user domain.User) error

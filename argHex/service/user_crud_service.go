@@ -36,6 +36,12 @@ func (u userCRUDService) Read(id string) domain.User {
 	return userI
 }
 
+func (u userCRUDService) ReadAll(limit int64, offset int64, sort interface{}) []domain.User {
+	users := u.repo.GetAll(limit, offset, sort)
+
+	return users
+}
+
 func (u userCRUDService) Update(user domain.User) error {
 	err := u.repo.Set(user)
 
