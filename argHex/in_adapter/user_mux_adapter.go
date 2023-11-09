@@ -112,19 +112,17 @@ func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	users := u.user.ReadAll(limit, offset, sort)
 
-	// response := data_objects.UserResponseObject{
-	// 	Status: "ok",
-	// 	Code:   200,
-	// }
-
-	var response []interface{}
+	response := data_objects.UserResponseObject{
+		Status: "ok",
+		Code:   200,
+	}
 
 	for i := 0; i < len(users); i++ {
-		response = append(response, users[i])
+		response.Users = append(response.Users, users[i])
 	}
 
 	// set Content-Range header with limit, offset, and total
-	total := len(response)
+	total := len(response.Users)
 
 	w.Header().Add("Content-Range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
 	w.Header().Add("range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
