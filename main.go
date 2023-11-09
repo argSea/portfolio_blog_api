@@ -173,8 +173,13 @@ func main() {
 
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
-	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Origin", "Accept", "Accept-Encoding", "Accept-Language", "Connection", "Host", "Referer", "User-Agent"})
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	credential := handlers.AllowCredentials()
+
+	// handle preflight
+	router.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
@@ -193,10 +198,6 @@ func main() {
 func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
-
-		if "OPTIONS" == r.Method {
-			return
-		}
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
