@@ -435,6 +435,9 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 	updated_err := u.user.Update(user)
 
+	// get updated user
+	user = u.user.Read(id)
+
 	var resp interface{}
 
 	if nil != updated_err {
@@ -449,6 +452,8 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 			Status: "ok",
 			Code:   200,
 		}
+
+		resp = user
 		w.WriteHeader(http.StatusOK)
 	}
 
