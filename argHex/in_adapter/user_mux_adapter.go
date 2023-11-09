@@ -34,17 +34,24 @@ func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p
 
 	//user service
 	router.HandleFunc("", adapter.GetAll).Methods("GET")
-	router.HandleFunc("/", adapter.GetAll).Methods("GET")
-	router.HandleFunc("/", adapter.Create).Methods("POST")
+	router.HandleFunc("", adapter.Create).Methods("POST")
 	router.HandleFunc("/{id}", adapter.Get).Methods("GET")
 	router.HandleFunc("/{id}", adapter.Update).Methods("PUT")
 	router.HandleFunc("/{id}", adapter.Delete).Methods("DELETE")
+	router.HandleFunc("/{id}/resumes", adapter.GetResumes).Methods("GET")
+	router.HandleFunc("/{id}/projects", adapter.GetProjects).Methods("GET")
+
+	router.HandleFunc("/", adapter.GetAll).Methods("GET")
+	router.HandleFunc("/", adapter.Create).Methods("POST")
+	router.HandleFunc("/{id}/", adapter.Get).Methods("GET")
+	router.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
+	router.HandleFunc("/{id}/", adapter.Delete).Methods("DELETE")
 
 	//resume service
-	router.HandleFunc("/{id}/resumes", adapter.GetResumes).Methods("GET")
+	router.HandleFunc("/{id}/resumes/", adapter.GetResumes).Methods("GET")
 
 	//project service
-	router.HandleFunc("/{id}/projects", adapter.GetProjects).Methods("GET")
+	router.HandleFunc("/{id}/projects/", adapter.GetProjects).Methods("GET")
 }
 
 func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
