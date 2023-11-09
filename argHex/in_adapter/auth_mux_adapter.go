@@ -28,8 +28,8 @@ func NewAuthMuxAdapter(a in_port.AuthService, l in_port.UserLoginService, s []by
 	}
 
 	//user auth service
-	r.HandleFunc("/login\\/?", adapter.Login).Methods("POST")
-	r.HandleFunc("/validate\\/?", adapter.Validate).Methods("GET")
+	r.HandleFunc("/login/", adapter.Login).Methods("POST")
+	r.HandleFunc("/validate/", adapter.Validate).Methods("GET")
 
 }
 
