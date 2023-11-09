@@ -23,7 +23,7 @@ func NewUserMongoAdapter(store *stores.Mordor) out_port.UserRepo {
 
 func (u userMongoAdapter) GetAll(limit int64, offset int64, sort interface{}) domain.Users {
 	var users domain.Users
-	count, err := u.store.GetAll(limit, offset, sort, &users)
+	count, err := u.store.GetAll(50, offset, sort, &users)
 
 	if nil != err {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
