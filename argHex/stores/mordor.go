@@ -66,6 +66,9 @@ func (m *Mordor) GetMany(field string, value interface{}, limit int64, offset in
 	findOpts.SetSort(sort)
 	cursor, err := m.collection.Find(m.ctx, bson.M{field: value}, findOpts)
 
+	log.Printf("cursor: %+v\n", cursor)
+	log.Printf("err: %+v\n", err)
+
 	if nil != err {
 		return 0, err
 	}
