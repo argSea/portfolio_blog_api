@@ -89,6 +89,10 @@ func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	if nil != r.URL.Query()["sort"] {
 		sort = r.URL.Query()["sort"][0]
+
+		if "" == sort {
+			sort = "nil"
+		}
 	}
 
 	users := u.user.ReadAll(limit, offset, sort)
