@@ -231,7 +231,7 @@ func (u userMuxAdapter) Get(w http.ResponseWriter, r *http.Request) {
 
 	response.Users = append(response.Users, user_data)
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response.Users[0])
 }
 
 func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
