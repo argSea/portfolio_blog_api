@@ -177,12 +177,6 @@ func main() {
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range"})
 	credential := handlers.AllowCredentials()
 
-	// handle preflight
-	router.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		return
-	})
-
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -206,6 +200,15 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		// set allowed origins header to origin
 		w.Header().Set("Access-Control-Allow-Origin", origin)
+
+		// handle preflight
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorization, Content-Range")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
