@@ -194,6 +194,12 @@ func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
+		// if options, send back 200
+		if "OPTIONS" == r.Method {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
 
