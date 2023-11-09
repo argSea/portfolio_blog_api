@@ -180,6 +180,7 @@ func main() {
 	// handle preflight
 	router.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		return
 	})
 
 	srv := &http.Server{
