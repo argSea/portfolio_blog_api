@@ -124,7 +124,7 @@ func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
 	// set Content-Range header with limit, offset, and total
 	total := len(response.Users)
 
-	w.Header().Add("Content-Range", strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
+	w.Header().Add("Content-Range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }
