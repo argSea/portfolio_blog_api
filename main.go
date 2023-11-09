@@ -130,10 +130,10 @@ func main() {
 	mediaWebstoreAdapter := out_adapter.NewMediaWebstoreAdapter(save_path, web_path)
 
 	//user
-	userRouter := router.PathPrefix("/1/user/").Subrouter()
-	projRouter := router.PathPrefix("/1/project/").Subrouter()
-	resumeRouter := router.PathPrefix("/1/resume/").Subrouter()
-	authRouter := router.PathPrefix("/1/auth/").Subrouter()
+	userRouter := router.PathPrefix("/1/user").Subrouter()
+	projRouter := router.PathPrefix("/1/project").Subrouter()
+	resumeRouter := router.PathPrefix("/1/resume").Subrouter()
+	authRouter := router.PathPrefix("/1/auth").Subrouter()
 
 	//resume
 	log.Println("Initializing resume")
