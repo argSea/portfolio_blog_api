@@ -182,6 +182,9 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&user)
 
 	new_id, err := u.user.Create(user)
+
+	// get user by new_id
+	user = u.user.Read(new_id)
 	var resp interface{}
 
 	if nil != err {
@@ -197,6 +200,8 @@ func (u userMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
 			Code:   200,
 			UserID: new_id,
 		}
+
+		resp = user
 
 		w.WriteHeader(http.StatusOK)
 	}
