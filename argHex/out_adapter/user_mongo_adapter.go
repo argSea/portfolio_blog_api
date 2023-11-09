@@ -21,8 +21,8 @@ func NewUserMongoAdapter(store *stores.Mordor) out_port.UserRepo {
 	return u
 }
 
-func (u userMongoAdapter) GetAll(limit int64, offset int64, sort interface{}) []domain.User {
-	users := []domain.User{}
+func (u userMongoAdapter) GetAll(limit int64, offset int64, sort interface{}) domain.Users {
+	var users domain.Users
 	count, err := u.store.GetAll(limit, offset, sort, &users)
 
 	if nil != err {

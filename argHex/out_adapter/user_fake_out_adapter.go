@@ -18,7 +18,7 @@ func (u userFakeOutAdapter) Login(user domain.User) (string, error) {
 	return "12345", nil
 }
 
-func (u userFakeOutAdapter) GetAll(limit int64, offset int64, sort interface{}) []domain.User {
+func (u userFakeOutAdapter) GetAll(limit int64, offset int64, sort interface{}) domain.Users {
 	users := []domain.User{}
 	user := domain.User{}
 	user.Id = "12345"
