@@ -172,9 +172,9 @@ func main() {
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
 	// echo back origins
-	origins := handlers.AllowedOrigins([]string{"*"})
+	origins := handlers.AllowedOrigins([]string{"http://127.0.0.1:5173", "http://127.0.0.1:5174"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
-	headers := handlers.AllowedHeaders([]string{"*"})
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range"})
 	credential := handlers.AllowCredentials()
 
 	// handle preflight
