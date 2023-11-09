@@ -96,6 +96,20 @@ func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// if limit and offset are 0, check for range query string
+	if 0 == limit && 0 == offset {
+		if nil != r.URL.Query()["range"] {
+			// convert [0, 10] to limit = 10, offset = 0
+			range_str := r.URL.Query()["range"][0]
+			range_str = strings.Replace(range_str, "[", "", -1)
+			range_str = strings.Replace(range_str, "]", "", -1)
+
+			range_arr := strings.Split(range_str, ",")
+			limit, _ = strconv.ParseInt(range_arr[1], 10, 64)
+			offset, _ = strconv.ParseInt(range_arr[0], 10, 64)
+		}
+	}
+
 	users := u.user.ReadAll(limit, offset, sort)
 
 	response := data_objects.UserResponseObject{
@@ -106,6 +120,10 @@ func (u userMuxAdapter) GetAll(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(users); i++ {
 		response.Users = append(response.Users, users[i])
 	}
+
+	// set Content-Range header with limit, offset, and total
+	total := len(response.Users)
+	w.Header().Add("Content-Range", strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
