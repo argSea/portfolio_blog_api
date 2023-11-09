@@ -33,6 +33,7 @@ func NewUserMuxAdapter(u in_port.UserCRUDService, r in_port.UserResumeService, p
 	}
 
 	//user service
+	router.HandleFunc("", adapter.GetAll).Methods("GET")
 	router.HandleFunc("/", adapter.GetAll).Methods("GET")
 	router.HandleFunc("/", adapter.Create).Methods("POST")
 	router.HandleFunc("/{id}/", adapter.Get).Methods("GET")
