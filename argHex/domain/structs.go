@@ -53,6 +53,11 @@ type Picture struct {
 	Text     string `json:"text" bson:"text,omitempty"`
 }
 
+type SimpleImage struct {
+	Source string `json:"src" bson:"source,omitempty"`
+	Alt    string `json:"alt" bson:"alt,omitempty"`
+}
+
 type Feature struct {
 	Feature       string    `json:"feature" bson:"feature,omitempty"`
 	IsComplete    bool      `json:"isComplete" bson:"isComplete,omitempty"`
@@ -81,9 +86,9 @@ type TechInterest struct {
 }
 
 type Contact struct {
-	Name string `json:"name" bson:"name,omitempty"`
-	Link string `json:"link" bson:"link,omitempty"`
-	Icon string `json:"icon" bson:"icon,omitempty"`
+	Name string      `json:"name" bson:"name,omitempty"`
+	Link string      `json:"link" bson:"link,omitempty"`
+	Icon SimpleImage `json:"icon" bson:"icon,omitempty"`
 }
 
 type SkillSections []SkillSection
