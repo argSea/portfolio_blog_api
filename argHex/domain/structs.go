@@ -86,9 +86,9 @@ type TechInterest struct {
 }
 
 type Contact struct {
-	Name string      `json:"name" bson:"name,omitempty"`
-	Link string      `json:"link" bson:"link,omitempty"`
-	Icon SimpleImage `json:"icon" bson:"icon,omitempty"`
+	Name string `json:"name" bson:"name,omitempty"`
+	Link string `json:"link" bson:"link,omitempty"`
+	Icon string `json:"icon" bson:"icon,omitempty"`
 }
 
 type SkillSections []SkillSection
