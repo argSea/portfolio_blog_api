@@ -432,14 +432,14 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	// do the same for user.Interests
 	for i := 0; i < len(user.TechInterests); i++ {
 		// check if icon is file data or url
-		if "" == user.TechInterests[i].Icon {
+		if "" == user.TechInterests[i].Icon.Source {
 			continue
 		}
 
-		if "data:" == user.TechInterests[i].Icon[:5] {
+		if "data:" == user.TechInterests[i].Icon.Source[:5] {
 			// upload file
-			mime_type := user.TechInterests[i].Icon[5:strings.Index(user.TechInterests[i].Icon, ";")]
-			encoded_data := user.TechInterests[i].Icon[strings.Index(user.TechInterests[i].Icon, ",")+1:]
+			mime_type := user.TechInterests[i].Icon.Source[5:strings.Index(user.TechInterests[i].Icon.Source, ";")]
+			encoded_data := user.TechInterests[i].Icon.Source[strings.Index(user.TechInterests[i].Icon.Source, ",")+1:]
 
 			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
 
@@ -470,7 +470,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			user.TechInterests[i].Icon = upload_res
+			user.TechInterests[i].Icon.Source = upload_res
 		}
 	}
 

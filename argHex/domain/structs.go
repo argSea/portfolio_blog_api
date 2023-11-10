@@ -80,9 +80,9 @@ type Skill struct {
 }
 
 type TechInterest struct {
-	Name          string `json:"name" bson:"name,omitempty"`
-	Icon          string `json:"icon" bson:"icon,omitempty"`
-	InterestLevel int    `json:"interestLevel" bson:"interestLevel,omitempty"`
+	Name          string      `json:"name" bson:"name,omitempty"`
+	Icon          SimpleImage `json:"icon" bson:"icon,omitempty"`
+	InterestLevel int         `json:"interestLevel" bson:"interestLevel,omitempty"`
 }
 
 type Contact struct {
