@@ -344,6 +344,47 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 		user.Password = domain.Password(hashed_pass)
 	}
 
+	// upload user.Picture.src
+	if "" != user.Picture.Source {
+		// check if icon is file data or url
+		if "data:" == user.Picture.Source[:5] {
+			// upload file
+			mime_type := user.Picture.Source[5:strings.Index(user.Picture.Source, ";")]
+			encoded_data := user.Picture.Source[strings.Index(user.Picture.Source, ",")+1:]
+
+			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
+
+			if nil != decode_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: decode_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// upload file
+			upload_res, upload_err := u.media.UploadMedia(mime_type, decoded_data)
+
+			if nil != upload_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: upload_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			user.Picture.Source = upload_res
+		}
+	}
+
 	for i := 0; i < len(user.Contacts); i++ {
 		// check if icon is file data or url
 		if "" == user.Contacts[i].Icon.Source {
