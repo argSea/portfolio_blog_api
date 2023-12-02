@@ -217,6 +217,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		// check if query string is present starting with filter and path is /1/project
 		if "" != r.URL.Query().Get("filter") && r.URL.Path == "/1/project" {
+			log.Println("filter found")
 			// get filter
 			filter := r.URL.Query().Get("filter")
 
