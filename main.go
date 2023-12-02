@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -213,6 +214,22 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
+
+		// check if query string is present starting with filter
+		if "" != r.URL.Query().Get("filter") {
+			// get filter
+			filter := r.URL.Query().Get("filter")
+
+			// json decode filter
+			var filter_json map[string]string
+			json.Unmarshal([]byte(filter), &filter_json)
+
+			// get userID
+			userID := filter_json["userID"]
+
+			// go to /1/user/{userID}/projects
+			r.URL.Path = "/1/user/" + userID + "/projects"
+		}
 
 		next.ServeHTTP(w, r)
 	})
