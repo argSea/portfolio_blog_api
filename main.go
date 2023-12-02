@@ -86,7 +86,7 @@ func main() {
 	//mux
 	router := mux.NewRouter()
 	router.Use(baseMiddleWare)
-	router.NotFoundHandler = notFoundHandler(router)
+	router.NotFoundHandler = notFoundHandler()
 	// router.StrictSlash(true)
 
 	//Cache credentials
@@ -194,7 +194,7 @@ func main() {
 	}
 }
 
-func notFoundHandler(next http.Handler) http.Handler {
+func notFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Query())
 		log.Println(r.URL.Path)
@@ -218,8 +218,6 @@ func notFoundHandler(next http.Handler) http.Handler {
 
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("404 - Not Found"))
-
-		next.ServeHTTP(w, r)
 	})
 }
 
