@@ -601,6 +601,54 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	limit := int64(0)
+	offset := int64(0)
+	sort := ""
+
+	if nil != r.URL.Query()["limit"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["limit"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			limit = i
+		}
+	}
+
+	if nil != r.URL.Query()["offset"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["offset"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			offset = i
+		}
+	}
+
+	if nil != r.URL.Query()["sort"] {
+		sort = r.URL.Query()["sort"][0]
+
+		if "" == sort {
+			sort = "nil"
+		}
+	}
+
+	// if limit and offset are 0, check for range query string
+	if 0 == limit && 0 == offset {
+		if nil != r.URL.Query()["range"] {
+			// convert [0, 10] to limit = 10, offset = 0
+			range_str := r.URL.Query()["range"][0]
+			range_str = strings.Replace(range_str, "[", "", -1)
+			range_str = strings.Replace(range_str, "]", "", -1)
+
+			range_arr := strings.Split(range_str, ",")
+			limit, _ = strconv.ParseInt(range_arr[1], 10, 64)
+			offset, _ = strconv.ParseInt(range_arr[0], 10, 64)
+		}
+	}
+
 	userID := mux.Vars(r)["id"]
 	user_projects, count := u.project.GetProjects(userID)
 
@@ -614,7 +662,11 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 		response.Projects = append(response.Projects, user_projects[i])
 	}
 
+	total := len(response.Projects)
+
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
+	w.Header().Add("range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
 
 	json.NewEncoder(w).Encode(response)
 }

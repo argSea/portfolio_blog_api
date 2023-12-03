@@ -2,6 +2,7 @@ package in_adapter
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -106,14 +107,46 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// return a work in progress response
-	response := data_objects.ErroredResponseObject{
-		Status:  "ok",
-		Code:    200,
-		Message: "This endpoint is a work in progress. ",
+	// look for filter param and decode it
+	query := r.URL.Query().Get("filter")
+
+	// log query
+	log.Println(query)
+
+	if query == "" {
+		// throw 404
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    404,
+			Message: "No filter provided",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
 
-	json.NewEncoder(w).Encode(response)
+	var filter map[string]string
+	json.Unmarshal([]byte(query), &filter)
+
+	// check for userID in filter
+	userID, ok := filter["userID"]
+
+	if !ok {
+		// return 404
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    404,
+			Message: "No userID provided" + query,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	log.Println(userID)
+	log.Println(filter)
+
+	// change path to /1/user/{id}/project and start over
+	r.URL.Path = "/1/user/" + userID + "/project"
+
 }
 
 func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {
