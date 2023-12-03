@@ -30,6 +30,12 @@ func (p projectCRUDService) Create(project domain.Project) (string, error) {
 	return proj_id, err
 }
 
+func (p projectCRUDService) GetByUserID(userID string) ([]domain.Project, int64, error) {
+	projects, count, err := p.repo.GetProjectsByUserID(userID)
+
+	return projects, count, err
+}
+
 func (p projectCRUDService) Read(id string) domain.Project {
 	project := p.repo.Get(id)
 

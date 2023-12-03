@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
 	"github.com/argSea/portfolio_blog_api/argHex/domain"
@@ -107,6 +109,54 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	limit := int64(0)
+	offset := int64(0)
+	sort := ""
+
+	if nil != r.URL.Query()["limit"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["limit"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			limit = i
+		}
+	}
+
+	if nil != r.URL.Query()["offset"] {
+		// convert string to int64
+		i, ierr := strconv.ParseInt(r.URL.Query()["offset"][0], 10, 64)
+
+		if nil != ierr {
+			// do nothing
+		} else {
+			offset = i
+		}
+	}
+
+	if nil != r.URL.Query()["sort"] {
+		sort = r.URL.Query()["sort"][0]
+
+		if "" == sort {
+			sort = "nil"
+		}
+	}
+
+	// if limit and offset are 0, check for range query string
+	if 0 == limit && 0 == offset {
+		if nil != r.URL.Query()["range"] {
+			// convert [0, 10] to limit = 10, offset = 0
+			range_str := r.URL.Query()["range"][0]
+			range_str = strings.Replace(range_str, "[", "", -1)
+			range_str = strings.Replace(range_str, "]", "", -1)
+
+			range_arr := strings.Split(range_str, ",")
+			limit, _ = strconv.ParseInt(range_arr[1], 10, 64)
+			offset, _ = strconv.ParseInt(range_arr[0], 10, 64)
+		}
+	}
+
 	// look for filter param and decode it
 	query := r.URL.Query().Get("filter")
 
@@ -131,21 +181,45 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 	userID, ok := filter["userID"]
 
 	if !ok {
-		// return 404
+		// throw 404
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    404,
-			Message: "No userID provided" + query,
+			Message: "No userID provided",
 		}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	log.Println(userID)
-	log.Println(filter)
+	projects, count, err := p.project.GetByUserID(userID)
 
-	// change path to /1/user/{id}/project and start over
-	r.URL.Path = "/1/user/" + userID + "/project"
+	if nil != err {
+		// throw 404
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    404,
+			Message: err,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	response := data_objects.ProjectResponseObject{
+		Status: "ok",
+		Code:   200,
+		Count:  count,
+	}
+
+	for i := 0; i < len(projects); i++ {
+		response.Projects = append(response.Projects, projects[i])
+	}
+
+	total := len(response.Projects)
+
+	w.Header().Add("Content-Range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
+	w.Header().Add("range", "users "+strconv.FormatInt(offset, 10)+"-"+strconv.FormatInt(offset+limit, 10)+"/"+strconv.FormatInt(int64(total), 10))
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response.Projects)
 
 }
 
