@@ -150,7 +150,7 @@ func main() {
 	projectMordor := stores.NewMordor(mongo_db.DB.Collection(projectTable), context.Background())
 	projectMongoAdapter := out_adapter.NewProjectMongoAdapter(projectMordor)
 	projectService := service.NewProjectCRUDService(projectMongoAdapter)
-	in_adapter.NewProjectMuxAdapter(projectService, projRouter, mediaService)
+	in_adapter.NewProjectMuxAdapter(projectService, projRouter)
 
 	//User
 	log.Println("Initializing user")

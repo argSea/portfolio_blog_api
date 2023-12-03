@@ -1,9 +1,7 @@
 package in_adapter
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -17,13 +15,11 @@ import (
 
 type projectMuxAdatper struct {
 	project in_port.ProjectCRUDService
-	media   in_port.MediaService
 }
 
-func NewProjectMuxAdapter(proj in_port.ProjectCRUDService, m *mux.Router, media in_port.MediaService) *projectMuxAdatper {
+func NewProjectMuxAdapter(proj in_port.ProjectCRUDService, m *mux.Router) *projectMuxAdatper {
 	p := projectMuxAdatper{
 		project: proj,
-		media:   media,
 	}
 
 	m.HandleFunc("", p.GetAll).Methods("GET")
@@ -244,75 +240,6 @@ func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	project.Id = id
-
-	// check auth
-	authorized, auth_err := p.checkAuth(r)
-
-	if nil != auth_err {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    500,
-			Message: auth_err.Error(),
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(response)
-
-		return
-	}
-
-	if !authorized {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(response)
-
-		return
-	}
-
-	// upload project.icon.src
-	if "" != project.Icon.Source {
-		// check if icon is file data or url
-		if "data:" == project.Icon.Source[:5] {
-			// upload file
-			mime_type := project.Icon.Source[5:strings.Index(project.Icon.Source, ";")]
-			encoded_data := project.Icon.Source[strings.Index(project.Icon.Source, ",")+1:]
-
-			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
-
-			if nil != decode_err {
-				response := data_objects.ErroredResponseObject{
-					Status:  "error",
-					Code:    500,
-					Message: decode_err.Error(),
-				}
-				w.WriteHeader(http.StatusInternalServerError)
-				json.NewEncoder(w).Encode(response)
-
-				return
-			}
-
-			// upload file
-			upload_res, upload_err := p.media.UploadMedia(mime_type, decoded_data)
-
-			if nil != upload_err {
-				response := data_objects.ErroredResponseObject{
-					Status:  "error",
-					Code:    500,
-					Message: upload_err.Error(),
-				}
-				w.WriteHeader(http.StatusInternalServerError)
-				json.NewEncoder(w).Encode(response)
-
-				return
-			}
-
-			project.Icon.Source = upload_res
-		}
-	}
-
 	updated_err := p.project.Update(project)
 
 	var resp interface{}
@@ -367,51 +294,4 @@ func (p projectMuxAdatper) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(resp)
-}
-
-func (p projectMuxAdatper) checkAuth(r *http.Request) (bool, error) {
-	return true, nil
-	// check auth
-	validate_endpoint := "https://api.argsea.com/1/auth/validate/"
-
-	// pass along all cookies
-	cookies := r.Cookies()
-	cookie_string := ""
-
-	for i := 0; i < len(cookies); i++ {
-		cookie_string += cookies[i].Name + "=" + cookies[i].Value + ";"
-	}
-
-	log.Println(cookie_string)
-
-	req, req_err := http.NewRequest("GET", validate_endpoint, nil)
-
-	if nil != req_err {
-		return false, req_err
-	}
-
-	req.Header.Add("Cookie", cookie_string)
-
-	val_res, val_err := http.DefaultClient.Do(req)
-
-	if nil != val_err {
-		return false, val_err
-	}
-
-	defer val_res.Body.Close()
-
-	val_body, val_body_err := ioutil.ReadAll(val_res.Body)
-
-	if nil != val_body_err {
-		return false, val_body_err
-	}
-
-	var val_data map[string]interface{}
-	json.Unmarshal(val_body, &val_data)
-
-	if "ok" != val_data["status"] {
-		return false, nil
-	}
-
-	return true, nil
 }
