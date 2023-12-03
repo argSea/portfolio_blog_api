@@ -19,6 +19,7 @@ func NewProjectMuxAdapter(proj in_port.ProjectCRUDService, m *mux.Router) *proje
 		project: proj,
 	}
 
+	m.HandleFunc("/", p.GetAll).Methods("GET")
 	m.HandleFunc("/", p.Create).Methods("POST")
 	m.HandleFunc("/{id}/", p.Get).Methods("GET")
 	m.HandleFunc("/{id}/", p.Update).Methods("PUT")
@@ -85,6 +86,41 @@ func (p projectMuxAdatper) Get(w http.ResponseWriter, r *http.Request) {
 	response.Projects = append(response.Projects, project_data)
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	// look for filter param and decode it
+	var filter map[string]string
+	json.NewDecoder(r.Body).Decode(&filter)
+
+	// check for userID in filter
+	userID, ok := filter["userID"]
+
+	if !ok {
+		// return 404
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    404,
+			Message: "No userID provided",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	mux.Vars(r)["userID"] = userID
+
+	p.Get(w, r)
 }
 
 func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {

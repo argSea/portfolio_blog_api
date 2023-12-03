@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -86,7 +85,6 @@ func main() {
 	//mux
 	router := mux.NewRouter()
 	router.Use(baseMiddleWare)
-	router.NotFoundHandler = notFoundHandler()
 	// router.StrictSlash(true)
 
 	//Cache credentials
@@ -192,36 +190,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not start server: %s\n", err.Error())
 	}
-}
-
-func notFoundHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Query())
-		log.Println(r.URL.Path)
-
-		// check if query string is present starting with filter and path is /1/project
-		if "" != r.URL.Query().Get("filter") && r.URL.Path == "/1/project" {
-			log.Println("filter found")
-			// get filter
-			filter := r.URL.Query().Get("filter")
-
-			// json decode filter
-			var filter_json map[string]string
-			json.Unmarshal([]byte(filter), &filter_json)
-
-			// get userID
-			userID := filter_json["userID"]
-
-			// go to /1/user/{userID}/projects
-			r.URL.Path = "/1/user/" + userID + "/projects"
-
-			// serve
-			http.DefaultServeMux.ServeHTTP(w, r)
-		}
-
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404 - Not Found"))
-	})
 }
 
 func baseMiddleWare(next http.Handler) http.Handler {
