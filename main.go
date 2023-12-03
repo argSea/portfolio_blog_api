@@ -242,6 +242,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 			// change path to /1/user/:id/project
 			r.URL.Path = "/1/user/" + userID + "/project"
+			log.Println(r.URL.Path)
 		}
 
 		next.ServeHTTP(w, r)

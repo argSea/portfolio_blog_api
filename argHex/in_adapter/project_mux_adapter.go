@@ -105,6 +105,15 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
+
+	// return a work in progress response
+	response := data_objects.ErroredResponseObject{
+		Status:  "ok",
+		Code:    200,
+		Message: "This endpoint is a work in progress. ",
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {
