@@ -15,6 +15,9 @@ type Project struct {
 	Type              string       `json:"projectType" bson:"projectType,omitempty"`
 	Name              string       `json:"name" bson:"name,omitempty"`
 	ShortName         *string      `json:"shortName" bson:"shortName,omitempty"`
+	CreatedDate       *string      `json:"createdDate" bson:"createdDate,omitempty"`
+	UpdatedDate       *string      `json:"updatedDate" bson:"updatedDate,omitempty"`
+	PublishedDate     *string      `json:"publishedDate" bson:"publishedDate,omitempty"`
 	Icon              SimpleImage  `json:"icon" bson:"icon,omitempty"`
 	Images            []Screenshot `json:"images" bson:"images,omitempty"`
 	Slug              string       `json:"slug" bson:"slug,omitempty"`
