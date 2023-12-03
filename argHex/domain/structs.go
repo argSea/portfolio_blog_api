@@ -91,6 +91,11 @@ type Contact struct {
 	Icon SimpleImage `json:"icon" bson:"icon,omitempty"`
 }
 
+type Screenshot struct {
+	Order int         `json:"order" bson:"order,omitempty"`
+	Image SimpleImage `json:"image" bson:"image,omitempty"`
+}
+
 type SkillSections []SkillSection
 type Skills []Skill
 type Highlights []Highlight
