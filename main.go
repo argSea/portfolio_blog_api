@@ -216,7 +216,7 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		fmt.Println(r.Method)
 
 		// check if path is /1/project
-		if r.URL.Path != "/1/project" {
+		if r.URL.Path == "/1/project" {
 			// look for filter param and decode it
 			query := r.URL.Query().Get("filter")
 
