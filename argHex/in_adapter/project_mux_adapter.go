@@ -94,7 +94,7 @@ func (p projectMuxAdatper) Get(w http.ResponseWriter, r *http.Request) {
 
 	response.Projects = append(response.Projects, project_data)
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response.Projects)
 }
 
 func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
