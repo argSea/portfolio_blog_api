@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -213,6 +214,35 @@ func baseMiddleWare(next http.Handler) http.Handler {
 
 		fmt.Println(r.URL)
 		fmt.Println(r.Method)
+
+		// check if path is /1/project
+		if r.URL.Path != "/1/project" {
+			// look for filter param and decode it
+			query := r.URL.Query().Get("filter")
+
+			// log query
+			log.Println(query)
+
+			if query == "" {
+				return
+			}
+
+			var filter map[string]string
+			json.Unmarshal([]byte(query), &filter)
+
+			// check for userID in filter
+			userID, ok := filter["userID"]
+
+			if !ok {
+				return
+			}
+
+			log.Println(userID)
+			log.Println(filter)
+
+			// change path to /1/user/:id/project
+			r.URL.Path = "/1/user/" + userID + "/project"
+		}
 
 		next.ServeHTTP(w, r)
 	})

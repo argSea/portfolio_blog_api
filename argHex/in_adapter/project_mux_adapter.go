@@ -2,7 +2,6 @@ package in_adapter
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -106,41 +105,6 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(response)
 		}
 	}()
-
-	// look for filter param and decode it
-	query := r.URL.Query().Get("filter")
-
-	// log query
-	log.Println(query)
-
-	if query == "" {
-		p.Get(w, r)
-		return
-	}
-
-	var filter map[string]string
-	json.Unmarshal([]byte(query), &filter)
-
-	// check for userID in filter
-	userID, ok := filter["userID"]
-
-	if !ok {
-		// return 404
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    404,
-			Message: "No userID provided" + query,
-		}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	log.Println(userID)
-	log.Println(filter)
-
-	mux.Vars(r)["userID"] = userID
-
-	p.Get(w, r)
 }
 
 func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {
