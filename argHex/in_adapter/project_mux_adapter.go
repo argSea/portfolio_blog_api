@@ -313,6 +313,49 @@ func (p projectMuxAdatper) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// do the same with project.Images
+	for i := 0; i < len(project.Images); i++ {
+		if "" != project.Images[i].Image.Source {
+			// check if icon is file data or url
+			if "data:" == project.Images[i].Image.Source[:5] {
+				// upload file
+				mime_type := project.Images[i].Image.Source[5:strings.Index(project.Images[i].Image.Source, ";")]
+				encoded_data := project.Images[i].Image.Source[strings.Index(project.Images[i].Image.Source, ",")+1:]
+
+				decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
+
+				if nil != decode_err {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    500,
+						Message: decode_err.Error(),
+					}
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+
+				// upload file
+				upload_res, upload_err := p.media.UploadMedia(mime_type, decoded_data)
+
+				if nil != upload_err {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    500,
+						Message: upload_err.Error(),
+					}
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+
+				project.Images[i].Image.Source = upload_res
+			}
+		}
+	}
+
 	updated_err := p.project.Update(project)
 
 	// get updated project
