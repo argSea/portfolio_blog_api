@@ -10,7 +10,7 @@ type ProjectSort struct {
 //Entity // domain
 type Project struct {
 	//Model
-	Id                string      `json:"projectID" bson:"_id,omitempty"`
+	Id                string      `json:"id" bson:"_id,omitempty"`
 	UserIDs           []string    `json:"userIDs" bson:"userIDs,omitempty"`
 	Type              string      `json:"projectType" bson:"projectType,omitempty"`
 	Name              string      `json:"name" bson:"name,omitempty"`
