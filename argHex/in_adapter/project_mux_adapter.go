@@ -2,6 +2,7 @@ package in_adapter
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/argSea/portfolio_blog_api/argHex/data_objects"
@@ -108,6 +109,9 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	// look for filter param and decode it
 	query := r.URL.Query().Get("filter")
+
+	// log query
+	log.Println(query)
 
 	if query == "" {
 		p.Get(w, r)
