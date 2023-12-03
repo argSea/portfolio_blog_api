@@ -135,6 +135,9 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println(userID)
+	log.Println(filter)
+
 	mux.Vars(r)["userID"] = userID
 
 	p.Get(w, r)
