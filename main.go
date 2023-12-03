@@ -214,6 +214,9 @@ func notFoundHandler() http.Handler {
 
 			// go to /1/user/{userID}/projects
 			r.URL.Path = "/1/user/" + userID + "/projects"
+
+			// serve
+			http.DefaultServeMux.ServeHTTP(w, r)
 		}
 
 		w.WriteHeader(http.StatusNotFound)
