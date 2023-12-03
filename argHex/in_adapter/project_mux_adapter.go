@@ -107,8 +107,15 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// look for filter param and decode it
+	query := r.URL.Query().Get("filter")
+
+	if query == "" {
+		p.Get(w, r)
+		return
+	}
+
 	var filter map[string]string
-	json.NewDecoder(r.Body).Decode(&filter)
+	json.Unmarshal([]byte(query), &filter)
 
 	// check for userID in filter
 	userID, ok := filter["userID"]
@@ -118,7 +125,7 @@ func (p projectMuxAdatper) GetAll(w http.ResponseWriter, r *http.Request) {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    404,
-			Message: "No userID provided",
+			Message: "No userID provided" + query,
 		}
 		json.NewEncoder(w).Encode(response)
 		return
