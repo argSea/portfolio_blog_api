@@ -56,7 +56,119 @@ func (p projectMuxAdatper) Create(w http.ResponseWriter, r *http.Request) {
 	var project domain.Project
 	json.NewDecoder(r.Body).Decode(&project)
 
+	// check auth
+	authorized, auth_err := p.checkAuth(r)
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	// upload project.icon.src
+	if "" != project.Icon.Source {
+		// check if icon is file data or url
+		if "data:" == project.Icon.Source[:5] {
+			// upload file
+			mime_type := project.Icon.Source[5:strings.Index(project.Icon.Source, ";")]
+			encoded_data := project.Icon.Source[strings.Index(project.Icon.Source, ",")+1:]
+
+			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
+
+			if nil != decode_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: decode_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			// upload file
+			upload_res, upload_err := p.media.UploadMedia(mime_type, decoded_data)
+
+			if nil != upload_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: upload_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			project.Icon.Source = upload_res
+		}
+	}
+
+	// do the same with project.Images
+	for i := 0; i < len(project.Images); i++ {
+		if "" != project.Images[i].Image.Source {
+			// check if icon is file data or url
+			if "data:" == project.Images[i].Image.Source[:5] {
+				// upload file
+				mime_type := project.Images[i].Image.Source[5:strings.Index(project.Images[i].Image.Source, ";")]
+				encoded_data := project.Images[i].Image.Source[strings.Index(project.Images[i].Image.Source, ",")+1:]
+
+				decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
+
+				if nil != decode_err {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    500,
+						Message: decode_err.Error(),
+					}
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+
+				// upload file
+				upload_res, upload_err := p.media.UploadMedia(mime_type, decoded_data)
+
+				if nil != upload_err {
+					response := data_objects.ErroredResponseObject{
+						Status:  "error",
+						Code:    500,
+						Message: upload_err.Error(),
+					}
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(response)
+
+					return
+				}
+
+				project.Images[i].Image.Source = upload_res
+			}
+		}
+	}
+
 	new_id, err := p.project.Create(project)
+	new_project := p.project.Read(new_id)
 	var resp interface{}
 
 	if nil != err {
@@ -71,6 +183,8 @@ func (p projectMuxAdatper) Create(w http.ResponseWriter, r *http.Request) {
 			Code:      200,
 			ProjectID: new_id,
 		}
+
+		resp = new_project
 	}
 
 	json.NewEncoder(w).Encode(resp)
