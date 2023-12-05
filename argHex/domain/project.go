@@ -26,9 +26,9 @@ type Project struct {
 	Skills            *[]string    `json:"skills" bson:"skills,omitempty"`
 	Roles             *[]string    `json:"roles" bson:"roles,omitempty"`
 	Priority          int          `json:"priority" bson:"priority,omitempty"`
-	IsActive          bool         `json:"isActive" bson:"isActive,omitempty"`
-	IsReleased        bool         `json:"isReleased" bson:"isReleased,omitempty"`
-	IsHidden          bool         `json:"isHidden" bson:"isHidden,omitempty"`
+	IsActive          bool         `json:"isActive" bson:"isActive"`
+	IsReleased        bool         `json:"isReleased" bson:"isReleased"`
+	IsHidden          bool         `json:"isHidden" bson:"isHidden"`
 	BookID            *string      `json:"bookID" bson:"bookID,omitempty"`
 	RelatedCourse     *Course      `json:"relatedCourse" bson:"relatedCourse,omitempty"`
 	RelatedExperience *Experience  `json:"relatedExperience" bson:"relatedExperience,omitempty"`
