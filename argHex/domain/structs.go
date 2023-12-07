@@ -43,6 +43,7 @@ type Snippet struct {
 }
 
 type Link struct {
+	Type string `json:"type" bson:"type,omitempty"`
 	Text string `json:"text" bson:"text,omitempty"`
 	URL  string `json:"url" bson:"url,omitempty"`
 }
