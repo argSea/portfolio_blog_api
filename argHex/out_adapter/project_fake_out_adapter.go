@@ -21,7 +21,7 @@ func (p projectFakeOutAdapter) GetProjectsByUserID(id string) (domain.Projects, 
 	pr.Type = "something"
 	pr.Name = "Super duper project"
 	*pr.ShortName = "SDP"
-	*pr.Icon = "google.com/icon"
+	pr.Icon = domain.SimpleImage{Source: "google.com"}
 	pr.Slug = "super-duper-project"
 	*pr.RepoURL = "github.com/argsea/super-duper-project"
 	*pr.Skills = append(*pr.Skills, string("Skills"))

@@ -128,6 +128,7 @@ func main() {
 	save_path := viper.GetString("media.images.save_path")
 	web_path := viper.GetString("media.images.web_path")
 	mediaWebstoreAdapter := out_adapter.NewMediaWebstoreAdapter(save_path, web_path)
+	mediaService := service.NewMediaService(mediaWebstoreAdapter)
 
 	//user
 	userRouter := router.PathPrefix("/1/user").Subrouter()
@@ -149,7 +150,7 @@ func main() {
 	projectMordor := stores.NewMordor(mongo_db.DB.Collection(projectTable), context.Background())
 	projectMongoAdapter := out_adapter.NewProjectMongoAdapter(projectMordor)
 	projectService := service.NewProjectCRUDService(projectMongoAdapter)
-	in_adapter.NewProjectMuxAdapter(projectService, projRouter)
+	in_adapter.NewProjectMuxAdapter(projectService, projRouter, mediaService)
 
 	//User
 	log.Println("Initializing user")
@@ -159,7 +160,6 @@ func main() {
 	userService := service.NewUserCRUDService(userMongoAdapter)
 	userResumeService := service.NewUserResumeService(resumeMongoAdapter)
 	userProjectService := service.NewUserProjectService(projectMongoAdapter)
-	mediaService := service.NewMediaService(mediaWebstoreAdapter)
 	in_adapter.NewUserMuxAdapter(userService, userResumeService, userProjectService, mediaService, userRouter)
 
 	//Auth
