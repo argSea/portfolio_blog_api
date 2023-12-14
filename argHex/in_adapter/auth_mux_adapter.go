@@ -29,8 +29,68 @@ func NewAuthMuxAdapter(a in_port.AuthService, l in_port.UserLoginService, s []by
 
 	//user auth service
 	r.HandleFunc("/login/", adapter.Login).Methods("POST")
+	r.HandleFunc("/logout/", adapter.Logout).Methods("GET")
 	r.HandleFunc("/validate/", adapter.Validate).Methods("GET")
 
+}
+
+func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			// set code 500
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	// check if auth-token cookie exists
+	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+
+	if nil != session_err {
+		log.Println("Error getting session: ", session_err)
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: session_err.Error(),
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	log.Println("Session data: ", session)
+
+	if session.IsNew {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// delete session
+	session.Options.MaxAge = -1
+	session.Save(r, w)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(struct {
+		Status  string `json:"status"`
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}{
+		Status:  "ok",
+		Code:    200,
+		Message: "User logged out",
+	})
 }
 
 func (a authMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
