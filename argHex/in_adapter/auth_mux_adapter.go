@@ -224,10 +224,10 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	if nil != v_err {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
-			Code:    500,
-			Message: v_err.Error(),
+			Code:    401,
+			Message: "Unauthorized",
 		}
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
