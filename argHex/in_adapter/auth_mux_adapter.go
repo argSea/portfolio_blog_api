@@ -103,7 +103,7 @@ func (a authMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, token_error := a.setSession(user, false, w, r)
+	token, token_error := a.setSession(user, true, w, r)
 
 	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
