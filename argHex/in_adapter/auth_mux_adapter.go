@@ -195,10 +195,10 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error getting session: ", session_err)
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
+			Code:    500,
+			Message: session_err.Error(),
 		}
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -224,10 +224,10 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	if nil != v_err {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
+			Code:    500,
+			Message: v_err.Error(),
 		}
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
