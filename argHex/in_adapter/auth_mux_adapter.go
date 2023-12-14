@@ -18,6 +18,7 @@ type authMuxAdapter struct {
 	authService  in_port.AuthService
 	loginService in_port.UserLoginService
 	secret       []byte
+	store        *sessions.CookieStore
 }
 
 func NewAuthMuxAdapter(a in_port.AuthService, l in_port.UserLoginService, s []byte, r *mux.Router) {
@@ -25,6 +26,7 @@ func NewAuthMuxAdapter(a in_port.AuthService, l in_port.UserLoginService, s []by
 		authService:  a,
 		loginService: l,
 		secret:       s,
+		store:        sessions.NewCookieStore(s),
 	}
 
 	//user auth service
@@ -48,18 +50,38 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	_, token_error := a.setSession(domain.User{}, false, w, r)
+	// check if auth-token cookie exists
+	session, session_err := a.store.Get(r, "auth-token")
 
-	if nil != token_error {
+	if nil != session_err {
+		log.Println("Error getting session: ", session_err)
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    500,
-			Message: token_error.Error(),
+			Message: session_err.Error(),
 		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	log.Println("Session data: ", session)
+
+	if session.IsNew {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// delete session
+	session.Options.MaxAge = -1
+	session.Save(r, w)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(struct {
@@ -103,7 +125,7 @@ func (a authMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, token_error := a.setSession(user, true, w, r)
+	token, token_error := a.setSession(user, w, r)
 
 	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
@@ -226,25 +248,7 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (a authMuxAdapter) setSession(user domain.User, delete bool, w http.ResponseWriter, r *http.Request) (string, error) {
-
-	if delete {
-		session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
-
-		if nil != session_err {
-			log.Println("Error getting session: ", session_err)
-			return "", session_err
-		}
-
-		session.Options = &sessions.Options{
-			MaxAge: -1,
-		}
-
-		session.Save(r, w)
-
-		return "", nil
-	}
-
+func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
 	expires := time.Now().Add(time.Hour * 24)
 	roles := []string{"user"}
 	token, auth_error := a.authService.Generate(user.Id, expires, roles)
@@ -261,7 +265,7 @@ func (a authMuxAdapter) setSession(user domain.User, delete bool, w http.Respons
 		Secure:   true,
 	}
 
-	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+	session, session_err := a.store.Get(r, "auth-token")
 	session.Options = sess_options
 
 	if nil != session_err {
