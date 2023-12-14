@@ -79,10 +79,12 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("Session data: ", session)
+	log.Println("Session data: ", session.Options)
 	// delete session
 	session.Options.MaxAge = -1
 	session.Save(r, w)
+
+	log.Println("Session data: ", session.Options)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(struct {
