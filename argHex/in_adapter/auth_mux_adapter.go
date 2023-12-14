@@ -82,6 +82,7 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 	log.Println("Session data: ", session.Options)
 	// delete session
 	session.Options.MaxAge = 1
+	session.Values = nil
 	s_err := session.Save(r, w)
 
 	if nil != s_err {
