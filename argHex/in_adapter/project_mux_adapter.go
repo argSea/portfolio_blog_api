@@ -512,6 +512,32 @@ func (p projectMuxAdatper) Delete(w http.ResponseWriter, r *http.Request) {
 
 	project := domain.Project{}
 
+	authorized, auth_err := p.checkAuth(r)
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
 	id := mux.Vars(r)["id"]
 	project.Id = id
 	deleted_err := p.project.Delete(project)
@@ -535,7 +561,6 @@ func (p projectMuxAdatper) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p projectMuxAdatper) checkAuth(r *http.Request) (bool, error) {
-	return true, nil
 	// check auth
 	validate_endpoint := "https://api.argsea.com/1/auth/validate/"
 

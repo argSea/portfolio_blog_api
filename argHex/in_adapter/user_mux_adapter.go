@@ -520,7 +520,19 @@ func (u userMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
 	user.Id = id
 
 	// check auth
-	authorized := true //u.checkAuth(r, w, id)
+	authorized, auth_err := u.checkAuth(r)
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
 
 	if !authorized {
 		response := data_objects.ErroredResponseObject{
@@ -671,7 +683,6 @@ func (u userMuxAdapter) GetProjects(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u userMuxAdapter) checkAuth(r *http.Request) (bool, error) {
-	return true, nil
 	// check auth
 	validate_endpoint := "https://api.argsea.com/1/auth/validate/"
 
