@@ -189,7 +189,7 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// check if auth-token cookie exists
-	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+	session, session_err := a.store.Get(r, "auth-token")
 
 	if nil != session_err {
 		log.Println("Error getting session: ", session_err)
