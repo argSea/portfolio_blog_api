@@ -260,7 +260,6 @@ func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *h
 		Path:     "/",
 		MaxAge:   24 * 60 * 60,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
 	}
 
