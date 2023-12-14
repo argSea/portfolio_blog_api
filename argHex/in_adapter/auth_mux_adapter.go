@@ -157,12 +157,12 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("User is authorized! " + v_response.UserID)
 
-	userID := v_response.UserID
+	// userID := v_response.UserID
 	// role := v_response.Role
 
 	// get user
-	user := a.getUserDetails(userID)
-	log.Println("User details: ", user)
+	// user := a.getUserDetails(userID)
+	// log.Println("User details: ", user)
 
 	// return user details
 	// response := data_objects.UserResponseObject{
@@ -175,7 +175,15 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	// todo: add role to response
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(struct {
+		Status  string `json:"status"`
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}{
+		Status:  "ok",
+		Code:    200,
+		Message: "User is authorized",
+	})
 }
 
 func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
