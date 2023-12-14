@@ -48,41 +48,18 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// check if auth-token cookie exists
-	session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+	_, token_error := a.setSession(domain.User{}, false, w, r)
 
-	if nil != session_err {
-		log.Println("Error getting session: ", session_err)
+	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
 			Status:  "error",
 			Code:    500,
-			Message: session_err.Error(),
+			Message: token_error.Error(),
 		}
-
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-
-	log.Println("Session data: ", session)
-
-	if session.IsNew {
-		response := data_objects.ErroredResponseObject{
-			Status:  "error",
-			Code:    401,
-			Message: "Unauthorized",
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	// delete session
-	session.Options = &sessions.Options{
-		MaxAge: -1,
-	}
-
-	session.Save(r, w)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(struct {
@@ -126,7 +103,7 @@ func (a authMuxAdapter) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, token_error := a.setSession(user, w, r)
+	token, token_error := a.setSession(user, false, w, r)
 
 	if nil != token_error {
 		response := data_objects.ErroredResponseObject{
@@ -249,7 +226,25 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
+func (a authMuxAdapter) setSession(user domain.User, delete bool, w http.ResponseWriter, r *http.Request) (string, error) {
+
+	if delete {
+		session, session_err := sessions.NewCookieStore(a.secret).Get(r, "auth-token")
+
+		if nil != session_err {
+			log.Println("Error getting session: ", session_err)
+			return "", session_err
+		}
+
+		session.Options = &sessions.Options{
+			MaxAge: -1,
+		}
+
+		session.Save(r, w)
+
+		return "", nil
+	}
+
 	expires := time.Now().Add(time.Hour * 24)
 	roles := []string{"user"}
 	token, auth_error := a.authService.Generate(user.Id, expires, roles)
