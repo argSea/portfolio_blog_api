@@ -165,17 +165,17 @@ func (a authMuxAdapter) Validate(w http.ResponseWriter, r *http.Request) {
 	log.Println("User details: ", user)
 
 	// return user details
-	response := data_objects.UserResponseObject{
-		Status: "ok",
-		Code:   200,
-	}
+	// response := data_objects.UserResponseObject{
+	// 	Status: "ok",
+	// 	Code:   200,
+	// }
 
-	response.Users = append(response.Users, user)
+	// response.Users = append(response.Users, user)
 
 	// todo: add role to response
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(user)
 }
 
 func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *http.Request) (string, error) {
