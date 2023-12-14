@@ -26,8 +26,18 @@ func NewAuthMuxAdapter(a in_port.AuthService, l in_port.UserLoginService, s []by
 		authService:  a,
 		loginService: l,
 		secret:       s,
-		store:        sessions.NewCookieStore(s),
 	}
+
+	sess_options := &sessions.Options{
+		Domain:   "argsea.com",
+		Path:     "/",
+		MaxAge:   24 * 60 * 60,
+		HttpOnly: true,
+		Secure:   true,
+	}
+
+	adapter.store = sessions.NewCookieStore(s)
+	adapter.store.Options = sess_options
 
 	//user auth service
 	r.HandleFunc("/login/", adapter.Login).Methods("POST")
@@ -273,16 +283,7 @@ func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *h
 		return "", auth_error
 	}
 
-	sess_options := &sessions.Options{
-		Domain:   "argsea.com",
-		Path:     "/",
-		MaxAge:   24 * 60 * 60,
-		HttpOnly: true,
-		Secure:   true,
-	}
-
 	session, session_err := a.store.Get(r, "auth-token")
-	session.Options = sess_options
 
 	if nil != session_err {
 		return "", session_err
