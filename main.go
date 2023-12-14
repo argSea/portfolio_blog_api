@@ -172,7 +172,7 @@ func main() {
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
 	// echo back origins
-	origins := handlers.AllowedOrigins([]string{"argsea.com"})
+	origins := handlers.AllowedOrigins([]string{"https://argsea.com"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range", "range"})
 	exposedHeaders := handlers.ExposedHeaders([]string{"Content-Range"})
