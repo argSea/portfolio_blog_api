@@ -196,7 +196,7 @@ func (a authMuxAdapter) setSession(user domain.User, w http.ResponseWriter, r *h
 	}
 
 	sess_options := &sessions.Options{
-		// Domain:   "argsea.com",
+		Domain:   "argsea.com",
 		Path:     "/",
 		MaxAge:   24 * 60 * 60,
 		HttpOnly: true,
