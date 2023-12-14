@@ -82,7 +82,19 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 	log.Println("Session data: ", session.Options)
 	// delete session
 	session.Options.MaxAge = -1
-	session.Save(r, w)
+	s_err := session.Save(r, w)
+
+	if nil != s_err {
+		log.Println("Error saving session: ", s_err)
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: s_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
 	log.Println("Session data: ", session.Options)
 
