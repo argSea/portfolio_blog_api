@@ -78,6 +78,8 @@ func (a authMuxAdapter) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// delete session
+	session.Values["token"] = ""
+	session.Values["iat"] = ""
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 
