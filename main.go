@@ -196,11 +196,31 @@ func baseMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		// get origin header
-		origin := r.Header.Get("Origin")
+		// if GET request, allow all origins
+		if r.Method == "GET" {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+		} else {
+			allowed_origins := []string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev"}
+			// get origin header
+			origin := r.Header.Get("Origin")
 
-		// set allowed origins header to origin
-		w.Header().Set("Access-Control-Allow-Origin", origin)
+			origin_check := false
+			// check if origin is in allowed origins
+			for _, allowed_origin := range allowed_origins {
+				if origin == allowed_origin {
+					origin_check = true
+					break
+				}
+			}
+
+			// if origin is not in allowed origins, set to first allowed origin
+			if !origin_check {
+				origin = allowed_origins[0]
+			}
+
+			// set allowed origins header to origin
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 
 		// handle preflight
 		if r.Method == "OPTIONS" {
