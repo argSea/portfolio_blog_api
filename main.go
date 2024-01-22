@@ -172,7 +172,7 @@ func main() {
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
 
 	// echo back origins
-	origins := handlers.AllowedOrigins([]string{"https://argsea.com"})
+	origins := handlers.AllowedOrigins([]string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range", "range"})
 	exposedHeaders := handlers.ExposedHeaders([]string{"Content-Range"})
@@ -197,30 +197,30 @@ func baseMiddleWare(next http.Handler) http.Handler {
 		w.Header().Add("Content-Type", "application/json")
 
 		// if GET request, allow all origins
-		if r.Method == "GET" {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-		} else {
-			allowed_origins := []string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev"}
-			// get origin header
-			origin := r.Header.Get("Origin")
+		// if r.Method == "GET" {
+		// 	w.Header().Set("Access-Control-Allow-Origin", "*")
+		// } else {
+		// 	allowed_origins := []string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev"}
+		// 	// get origin header
+		// 	origin := r.Header.Get("Origin")
 
-			origin_check := false
-			// check if origin is in allowed origins
-			for _, allowed_origin := range allowed_origins {
-				if origin == allowed_origin {
-					origin_check = true
-					break
-				}
-			}
+		// 	origin_check := false
+		// 	// check if origin is in allowed origins
+		// 	for _, allowed_origin := range allowed_origins {
+		// 		if origin == allowed_origin {
+		// 			origin_check = true
+		// 			break
+		// 		}
+		// 	}
 
-			// if origin is not in allowed origins, set to first allowed origin
-			if !origin_check {
-				origin = allowed_origins[0]
-			}
+		// 	// if origin is not in allowed origins, set to first allowed origin
+		// 	if !origin_check {
+		// 		origin = allowed_origins[0]
+		// 	}
 
-			// set allowed origins header to origin
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		}
+		// 	// set allowed origins header to origin
+		// 	w.Header().Set("Access-Control-Allow-Origin", origin)
+		// }
 
 		// handle preflight
 		if r.Method == "OPTIONS" {
