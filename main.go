@@ -175,7 +175,7 @@ func main() {
 	origins := handlers.AllowedOrigins([]string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev", "http://127.0.0.1:5173"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Content-Range", "range"})
-	exposedHeaders := handlers.ExposedHeaders([]string{"Content-Range"})
+	exposedHeaders := handlers.ExposedHeaders([]string{"Content-Range", "X-Total-Count"})
 	credential := handlers.AllowCredentials()
 
 	srv := &http.Server{
