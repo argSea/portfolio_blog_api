@@ -97,6 +97,10 @@ type Screenshot struct {
 	Image SimpleImage `json:"image" bson:"image,omitempty"`
 }
 
+type HeroImage struct {
+	Image SimpleImage `json:"image" bson:"image,omitempty"`
+}
+
 type SkillSections []SkillSection
 type Skills []Skill
 type Highlights []Highlight
@@ -109,3 +113,4 @@ type Features []Feature
 type Education []CollegeExperience
 type TechInterests []TechInterest
 type Contacts []Contact
+type HeroImages []HeroImage

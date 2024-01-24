@@ -13,7 +13,7 @@ type User struct {
 	Email         string        `json:"email" bson:"email,omitempty"`
 	Contacts      Contacts      `json:"contacts" bson:"contacts,omitempty"`
 	Title         string        `json:"title" bson:"title,omitempty"`
-	Pictures      []SimpleImage `json:"pictures" bson:"pictures,omitempty"`
+	Pictures      HeroImages    `json:"pictures" bson:"pictures,omitempty"`
 	About         string        `json:"about" bson:"about,omitempty"`
 	TechInterests TechInterests `json:"techInterests" bson:"techInterests,omitempty"`
 }

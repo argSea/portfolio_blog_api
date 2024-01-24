@@ -347,7 +347,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 	// upload all user.Pictures
 	for i := 0; i < len(user.Pictures); i++ {
-		this_picture := user.Pictures[i]
+		this_picture := user.Pictures[i].Image
 		if "" == this_picture.Source {
 			// check if icon is file data or url
 			if "data:" == this_picture.Source[:5] {
@@ -388,7 +388,7 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		user.Pictures[i] = this_picture
+		user.Pictures[i].Image = this_picture
 	}
 
 	for i := 0; i < len(user.Contacts); i++ {
