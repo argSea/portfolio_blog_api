@@ -349,43 +349,44 @@ func (u userMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(user.Pictures); i++ {
 		this_picture := user.Pictures[i].Image
 		if "" == this_picture.Source {
-			// check if icon is file data or url
-			if "data:" == this_picture.Source[:5] {
-				// upload file
-				mime_type := this_picture.Source[5:strings.Index(this_picture.Source, ";")]
-				encoded_data := this_picture.Source[strings.Index(this_picture.Source, ",")+1:]
+			continue
+		}
+		// check if icon is file data or url
+		if "data:" == this_picture.Source[:5] {
+			// upload file
+			mime_type := this_picture.Source[5:strings.Index(this_picture.Source, ";")]
+			encoded_data := this_picture.Source[strings.Index(this_picture.Source, ",")+1:]
 
-				decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
+			decoded_data, decode_err := base64.StdEncoding.DecodeString(encoded_data)
 
-				if nil != decode_err {
-					response := data_objects.ErroredResponseObject{
-						Status:  "error",
-						Code:    500,
-						Message: decode_err.Error(),
-					}
-					w.WriteHeader(http.StatusInternalServerError)
-					json.NewEncoder(w).Encode(response)
-
-					return
+			if nil != decode_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: decode_err.Error(),
 				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
 
-				// upload file
-				upload_res, upload_err := u.media.UploadMedia(mime_type, decoded_data)
-
-				if nil != upload_err {
-					response := data_objects.ErroredResponseObject{
-						Status:  "error",
-						Code:    500,
-						Message: upload_err.Error(),
-					}
-					w.WriteHeader(http.StatusInternalServerError)
-					json.NewEncoder(w).Encode(response)
-
-					return
-				}
-
-				this_picture.Source = upload_res
+				return
 			}
+
+			// upload file
+			upload_res, upload_err := u.media.UploadMedia(mime_type, decoded_data)
+
+			if nil != upload_err {
+				response := data_objects.ErroredResponseObject{
+					Status:  "error",
+					Code:    500,
+					Message: upload_err.Error(),
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(response)
+
+				return
+			}
+
+			this_picture.Source = upload_res
 		}
 
 		user.Pictures[i].Image = this_picture
