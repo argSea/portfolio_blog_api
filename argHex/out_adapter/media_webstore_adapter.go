@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"os"
 
+	"github.com/argSea/portfolio_blog_api/argHex/domain"
 	"github.com/argSea/portfolio_blog_api/argHex/out_port"
 	"github.com/argSea/portfolio_blog_api/argHex/utility"
 )
@@ -53,4 +54,12 @@ func (m mediaWebstoreAdapter) UploadMedia(mime_type string, bytes []byte) (strin
 
 	// return file path
 	return web_path + file_name, nil
+}
+
+func (m mediaWebstoreAdapter) GetMedia(media_id string) (domain.Media, error) {
+	return domain.Media{}, nil
+}
+
+func (m mediaWebstoreAdapter) DeleteMedia(media_id string) error {
+	return nil
 }

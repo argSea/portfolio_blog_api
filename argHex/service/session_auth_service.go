@@ -43,7 +43,8 @@ func (s sessionAuthService) Generate(id string, expires time.Time, roles []strin
 	}
 
 	// get time.duration from expires
-	expires_duration := expires.Sub(time.Now())
+	// expires_duration := expires.Sub(time.Now())
+	expires_duration := time.Until(expires)
 
 	err := s.repo.Store(token, expires_duration, data)
 

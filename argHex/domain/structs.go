@@ -75,11 +75,6 @@ type SkillSection struct {
 	Skills Skills `json:"skills" bson:"skills,omitempty"`
 }
 
-type Skill struct {
-	Name       string `json:"name" bson:"name,omitempty"`
-	Efficiency int    `json:"efficiency" bson:"efficiency,omitempty"`
-}
-
 type TechInterest struct {
 	Name          string      `json:"name" bson:"name,omitempty"`
 	Icon          SimpleImage `json:"icon" bson:"icon,omitempty"`
@@ -102,7 +97,6 @@ type HeroImage struct {
 }
 
 type SkillSections []SkillSection
-type Skills []Skill
 type Highlights []Highlight
 type Courses []Course
 type Snippets []Snippet

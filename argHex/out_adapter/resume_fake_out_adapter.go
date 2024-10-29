@@ -43,7 +43,7 @@ func (u resumeFakeOutAdapter) GetByUserID(id string) (domain.Resumes, int64, err
 	courses.Name = "Blender BS"
 
 	skills.Name = "Programming Languages"
-	skills.Skills = append(skills.Skills, domain.Skill{Name: "C++", Efficiency: 10})
+	skills.Skills = append(skills.Skills, domain.Skill{Name: "C++"})
 
 	resume.Id = "not"
 	resume.UserID = "cabbage"

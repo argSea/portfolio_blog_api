@@ -30,7 +30,7 @@ func (u userLoginService) Login(user domain.User) (domain.User, error) {
 	if logged_in != nil {
 		log.Printf("User not logged in. err: %v", logged_in.Error())
 
-		err := errors.New("Incorrect credentials or user does not exist")
+		err := errors.New("incorrect credentials or user does not exist")
 
 		log.Printf("User not logged in. err: %v", err)
 		return domain.User{}, err

@@ -81,3 +81,17 @@ type AuthValidationResponseObject struct {
 	Role   string `json:"roles"`
 	UserID string `json:"userID"`
 }
+
+// //skills
+type SkillResponseObject struct {
+	Status string        `json:"status"`
+	Code   int64         `json:"code"`
+	Count  int64         `json:"count"`
+	Skills []interface{} `json:"skills"`
+}
+
+type NewSkillResponseObject struct {
+	Status  string `json:"status"`
+	Code    int64  `json:"code"`
+	SkillID string `json:"skillID"`
+}

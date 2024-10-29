@@ -108,6 +108,7 @@ func main() {
 	user_table := "users"
 	projectTable := "projects"
 	resumeTable := "resume"
+	skillTable := "skills"
 	authDB := 13
 
 	// setup redis
@@ -135,6 +136,7 @@ func main() {
 	projRouter := router.PathPrefix("/1/project").Subrouter()
 	resumeRouter := router.PathPrefix("/1/resume").Subrouter()
 	authRouter := router.PathPrefix("/1/auth").Subrouter()
+	skillRouter := router.PathPrefix("/1/skill").Subrouter()
 
 	//resume
 	log.Println("Initializing resume")
@@ -170,6 +172,13 @@ func main() {
 	userLoginService := service.NewUserLoginService(userMongoAdapter)
 	// userJWTService := service.NewJWTAuthService(jSecret)
 	in_adapter.NewAuthMuxAdapter(userAuthService, userLoginService, jSecret, authRouter)
+
+	//Skills
+	log.Println("Initializing skills")
+	skillMordor := stores.NewMordor(mongo_db.DB.Collection(skillTable), context.Background())
+	skillMongoAdapter := out_adapter.NewSkillMongoAdapter(skillMordor)
+	skillService := service.NewSkillCRUDService(skillMongoAdapter)
+	in_adapter.NewSkillMuxAdapter(skillService, skillRouter)
 
 	// echo back origins
 	origins := handlers.AllowedOrigins([]string{"https://argsea.com", "https://www.argsea.com", "https://argsea.dev", "https://www.argsea.dev", "http://127.0.0.1:5173"})
