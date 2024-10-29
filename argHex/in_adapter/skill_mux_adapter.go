@@ -38,6 +38,10 @@ func NewSkillMuxAdapter(s in_port.SkillCRUDService, r *mux.Router) {
 	// update skill
 	r.HandleFunc("/{id}", adapter.Update).Methods("PUT")
 	r.HandleFunc("/{id}/", adapter.Update).Methods("PUT")
+
+	// delete skill
+	r.HandleFunc("/{id}", adapter.Delete).Methods("DELETE")
+	r.HandleFunc("/{id}/", adapter.Delete).Methods("DELETE")
 }
 
 func (s skillMuxAdapter) Create(w http.ResponseWriter, r *http.Request) {
@@ -398,7 +402,73 @@ func (s skillMuxAdapter) Update(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
 
+func (s skillMuxAdapter) Delete(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			response := data_objects.ErroredResponseObject{
+				Status:  "error",
+				Code:    500,
+				Message: err,
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+		}
+	}()
+
+	// check auth
+	authorized, auth_err := s.checkAuth(r)
+
+	if nil != auth_err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: auth_err.Error(),
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	if !authorized {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    401,
+			Message: "Unauthorized",
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	skill := domain.Skill{}
+	id := mux.Vars(r)["id"]
+	skill.Id = id
+
+	err := s.skillService.Delete(skill)
+
+	if nil != err {
+		response := data_objects.ErroredResponseObject{
+			Status:  "error",
+			Code:    500,
+			Message: err.Error(),
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	response := data_objects.ItemLessResponseObject{
+		Status: "ok",
+		Code:   200,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 func (s skillMuxAdapter) checkAuth(r *http.Request) (bool, error) {
